@@ -39,19 +39,8 @@ def removeDirtyData(df, item):
 def saveDataset(df, file_path, file_name):
     df.to_csv(file_path+file_name+".csv", encoding="utf-8")
 
-if __name__ == "__main__":
-    # Read files
-    garlic_df = pd.read_csv("add_dirtydata/garlic_df.csv", low_memory=False)
-    napa_cabbage_df = pd.read_csv("add_dirtydata/napa_cabbage_df.csv", low_memory=False)
-    radish_df = pd.read_csv("add_dirtydata/radish_df.csv", low_memory=False)
-    pepper_df = pd.read_csv("add_dirtydata/pepper_df.csv", low_memory=False)
-
-    df_list = [garlic_df, napa_cabbage_df, radish_df, pepper_df]
-    df_name_list = ["garlic_df", "napa_cabbage_df", "radish_df", "pepper_df"]
-    item_list = ['마늘', '배추', '무', '건고추']    
-    file_path = "remove_dirtyData/"
-
-    # Remove Dirty Data and Save Dataset
-    for df, item, df_name in zip(df_list, item_list, df_name_list):
+# Remove Dirty Data and Save Dataset
+def remove_save(data_list, data_name_list, item_list, file_path):
+    for df, item, df_name in zip(data_list, item_list, data_name_list):
         df = removeDirtyData(df, item)
         saveDataset(df, file_path, df_name)

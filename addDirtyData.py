@@ -3,20 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 
-garlic_df = pd.read_csv("merged_data/garlic_merged_list.csv", low_memory=False)
-napa_cabbage_df = pd.read_csv("merged_data/napa_cabbage_merged_list.csv", low_memory=False)
-radish_df = pd.read_csv("merged_data/radish_merged_list.csv", low_memory=False)
-pepper_df = pd.read_csv("merged_data/pepper_merged_list.csv", low_memory=False)
-
-garlic_df.drop("Unnamed: 0", axis=1, inplace=True)
-napa_cabbage_df.drop("Unnamed: 0", axis=1, inplace=True)
-radish_df.drop("Unnamed: 0", axis=1, inplace=True)
-pepper_df.drop("Unnamed: 0", axis=1, inplace=True)
-
-garlic_df.drop("Unnamed: 0.1", axis=1, inplace=True)
-napa_cabbage_df.drop("Unnamed: 0.1", axis=1, inplace=True)
-radish_df.drop("Unnamed: 0.1", axis=1, inplace=True)
-pepper_df.drop("Unnamed: 0.1", axis=1, inplace=True)
+def setting(data_list):
+    for data in data_list:
+        data.drop("Unnamed: 0", axis=1, inplace=True)
+        data.drop("Unnamed: 0.1", axis=1, inplace=True)
 
 def fibonacci(n):
     fib_list = [0, 1]
@@ -50,14 +40,12 @@ def modifyWithDirtyData(df, idx):
             row['일'] == 32
     df.iloc[idx] = row
 
-df_list = [garlic_df, napa_cabbage_df, radish_df, pepper_df]
-df_name_list = ["garlic_df", "napa_cabbage_df", "radish_df", "pepper_df"]
-
-for df, df_name in zip(df_list, df_name_list):
-    df_length = len(df)
-    for num in fibonacci_number:
-        if num >= df_length:
-            num %= df_length
-            modifyWithDirtyData(df, num)
-    print(df)
-    df.to_csv("add_dirtydata/"+df_name+".csv", encoding="utf-8")
+def addDirtyData(data_list, data_name_list):
+    for df, df_name in zip(data_list, data_name_list):
+        df_length = len(df)
+        for num in fibonacci_number:
+            if num >= df_length:
+                num %= df_length
+                modifyWithDirtyData(df, num)
+        #print(df)
+        df.to_csv("add_dirtydata/"+df_name+".csv", encoding="utf-8")

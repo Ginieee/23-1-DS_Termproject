@@ -25,17 +25,17 @@ pd.set_option("display.max_rows", 25)
 # whsl_dail_prce 소매일일가격
 # rtsl_dail_prce 소매일일가격
 # ----------------------------------------------
-price_df = pd.read_csv("TB_TAT_DAILY_SOON_PRC_CRS.csv", low_memory=False)
+price_df = pd.read_csv("original_dataset/TB_TAT_DAILY_SOON_PRC_CRS.csv", low_memory=False)
 
 # ----------------------------------------------
 # 기상관측(19960128-20230519) 데이터셋
 # ----------------------------------------------
 # 지점d
 # ----------------------------------------------
-asos_df1 = pd.read_csv("OBS_ASOS_DD_19960128_20060128.csv", low_memory=False)
-asos_df2 = pd.read_csv("OBS_ASOS_DD_20060129_20120129.csv", low_memory=False)
-asos_df3 = pd.read_csv("OBS_ASOS_DD_20120130_20220130.csv", low_memory=False)
-asos_df4 = pd.read_csv("OBS_ASOS_DD_20220131_20230519.csv", low_memory=False)
+asos_df1 = pd.read_csv("original_dataset/OBS_ASOS_DD_19960128_20060128.csv", low_memory=False)
+asos_df2 = pd.read_csv("original_dataset/OBS_ASOS_DD_20060129_20120129.csv", low_memory=False)
+asos_df3 = pd.read_csv("original_dataset/OBS_ASOS_DD_20120130_20220130.csv", low_memory=False)
+asos_df4 = pd.read_csv("original_dataset/OBS_ASOS_DD_20220131_20230519.csv", low_memory=False)
 total_asos_df = pd.concat([asos_df1, asos_df2, asos_df3, asos_df4])
 
 # ==============================================
