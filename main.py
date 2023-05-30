@@ -8,6 +8,7 @@ from removeDirtyData import remove_save
 from removeOutlier import removeOutliers
 from correlation import draw_corr_heatmap, setting2
 from exploration import data_exploration, setting_exploration
+from inflation import reflact_inflation
 
 # ==============================================
 # 1. Load Datasets
@@ -17,8 +18,8 @@ from exploration import data_exploration, setting_exploration
 # 이지해 데이터셋(소매가격 + 기상관측)
 # ----------------------------------------------
 # 배추, 무, 마늘, 건고추
-# 
-# Feature) 
+#
+# Feature)
 # 일시
 # 품목
 # 소매일일가격
@@ -106,7 +107,7 @@ pepper_df = pd.read_csv("add_dirtydata/pepper_df.csv", low_memory=False)
 
 df_list = [garlic_df, napa_cabbage_df, radish_df, pepper_df]
 df_name_list = ["garlic_df", "napa_cabbage_df", "radish_df", "pepper_df"]
-item_list = ['마늘', '배추', '무', '건고추']    
+item_list = ['마늘', '배추', '무', '건고추']
 file_path = "remove_dirtyData/"
 
 remove_save(df_list, df_name_list, item_list, file_path)
@@ -144,5 +145,24 @@ name_list = ["Garlic", "Napa Cabbage", "Radish", "Pepper"]
 
 setting2(df_list)
 draw_corr_heatmap(df_list, name_list)
+plt.show()
 
+# ==============================================
+# 8. Reflect inflation on data
+# ==============================================
+# Taking Inflation into DataFrame
+print('Read Inflation Data ----------------------------------------------------------------------------------------------------------------------------------------------------------')
+inflation_df = pd.read_excel("original_dataset/consumer_price_index.xlsx")
+
+print('Data Exploration of Inflation Data--------------------------------------------------------------------------------------------------------------------------------------------')
+data_exploration([inflation_df], ["Inflation DataFrame"])
+
+print('Reflect inflation on target--------------------------------------------------------------------------------------------------------------------------------------------')
+reflact_inflation(df_list, inflation_df)
+
+# ==============================================
+# 9. Correlation amongst features with inflation
+# ==============================================
+print('Correlation among features with inflation------------------------------------------------------------------------------------------------------------------------------------------------')
+draw_corr_heatmap(df_list, name_list)
 plt.show()

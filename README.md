@@ -29,7 +29,14 @@ correlation.py
 
 #### - seaborn heatmap으로 결과 출력
 ### 5) 데이터에 인플레이션 적용
-### 6) 인플레이션 적용한 feature와 target 간의 corr 확인
+#### - 파일명:
+```
+inflation.py
+```
+### 6) 인플레이션 적용한 feature와 target 간의 corr 확인#### - 파일명:
+```
+correlation.py
+```
 ### 7) 사용할 feature 선택
 ### 8) 학습알고리즘 적용 
 
