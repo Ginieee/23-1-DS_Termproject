@@ -33,7 +33,8 @@ correlation.py
 ```
 inflation.py
 ```
-### 6) 인플레이션 적용한 feature와 target 간의 corr 확인#### - 파일명:
+### 6) 인플레이션 적용한 feature와 target 간의 corr 확인
+#### - 파일명:
 ```
 correlation.py
 ```
