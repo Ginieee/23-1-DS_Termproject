@@ -8,7 +8,7 @@ from removeDirtyData import remove_save
 from removeOutlier import removeOutliers
 from correlation import draw_corr_heatmap, setting2
 from exploration import data_exploration, setting_exploration
-from inflation import reflact_inflation
+from inflation import reflect_inflation
 
 # ==============================================
 # 1. Load Datasets
@@ -158,7 +158,7 @@ print('Data Exploration of Inflation Data---------------------------------------
 data_exploration([inflation_df], ["Inflation DataFrame"])
 
 print('Reflect inflation on target--------------------------------------------------------------------------------------------------------------------------------------------')
-reflact_inflation(df_list, inflation_df)
+reflect_inflation(df_list, inflation_df)
 
 # ==============================================
 # 9. Correlation amongst features with inflation
