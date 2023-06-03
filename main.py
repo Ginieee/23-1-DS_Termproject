@@ -8,7 +8,7 @@ from removeDirtyData import remove_save
 from removeOutlier import removeOutliers
 from correlation import draw_corr_heatmap, setting2
 from exploration import data_exploration, setting_exploration
-from inflation import reflact_inflation
+from inflation import reflect_inflation
 from algorithm import find_best_feature_combination, run_multipleRegression, visualizeDistribution, add_previous_feature
 
 plt.rcParams['font.family'] = 'Malgun Gothic'
@@ -160,7 +160,7 @@ print('Data Exploration of Inflation Data---------------------------------------
 data_exploration([inflation_df], ["Inflation DataFrame"])
 
 print('Reflect inflation on target--------------------------------------------------------------------------------------------------------------------------------------------')
-reflact_inflation(df_list, inflation_df)
+reflect_inflation(df_list, inflation_df)
 
 # ==============================================
 # 9. Correlation amongst features with inflation
@@ -170,7 +170,7 @@ reflact_inflation(df_list, inflation_df)
 # plt.show()
 
 # ==============================================
-# 10. 
+# 10.
 # ==============================================
 for df in df_list:
     print(df)
