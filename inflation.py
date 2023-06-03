@@ -2,11 +2,11 @@ from removeDirtyData import saveDataset
 
 
 def reflect_inflation(df_list, inflation):
-    df_name_list = ["final_garlic_df", "final_cabbage_df", "final_radish_df", "final_pepper_df"]
+    df_name_list = ["inflation_garlic_df", "inflation_cabbage_df", "inflation_radish_df", "inflation_pepper_df"]
     inflation_score = inflation[['년도', '월', '소비자물가총지수']]
 
-    for df in df_list:
-        df.drop(['일시', '품목'], axis=1, inplace=True)
+    # for df in df_list:
+    #     df.drop(['일시', '품목'], axis=1, inplace=True)
 
     for year in range(len(inflation_score)):
         for df in df_list:

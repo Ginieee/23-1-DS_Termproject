@@ -172,11 +172,11 @@ reflect_inflation(df_list, inflation_df)
 # ==============================================
 # 10.
 # ==============================================
-for df in df_list:
-    print(df)
-    print("drop")
-    df.dropna(subset=['인플레이션 반영가'], axis = 0, inplace=True)
-    print(df)
-    print("--------------")
+# for df in df_list:
+#     print(df)
+#     print("drop")
+#     df.dropna(subset=['인플레이션 반영가'], axis = 0, inplace=True)
+#     print(df)
+#     print("--------------")
 
 add_previous_feature(df_list, item_list)
