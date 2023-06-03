@@ -10,6 +10,7 @@ from correlation import draw_corr_heatmap, setting2
 from exploration import data_exploration, setting_exploration
 from inflation import reflect_inflation
 from algorithm import find_best_feature_combination, run_multipleRegression, visualizeDistribution, add_previous_feature
+from dataClassification import final_df_classification
 
 plt.rcParams['font.family'] = 'Malgun Gothic'
 # ==============================================
@@ -179,4 +180,14 @@ reflect_inflation(df_list, inflation_df)
 #     print(df)
 #     print("--------------")
 
-add_previous_feature(df_list, item_list)
+#add_previous_feature(df_list, item_list)
+
+garlic_df = pd.read_csv("add_previous_feature/마늘_df.csv", low_memory=False)
+napa_cabbage_df = pd.read_csv("add_previous_feature/배추_df.csv", low_memory=False)
+radish_df = pd.read_csv("add_previous_feature/무_df.csv", low_memory=False)
+pepper_df = pd.read_csv("add_previous_feature/건고추_df.csv", low_memory=False)
+
+df_list = [garlic_df, napa_cabbage_df, radish_df, pepper_df]
+name_list = ["garlic", "napa_cabbage", "radish", "pepper"]
+
+final_df_classification(df_list, name_list)
