@@ -11,3 +11,6 @@ def reflact_inflation(df_list, inflation):
             for i in range(len(df)):
                 if df.loc[i,'연도'] == infletion_score.loc[year,'년도']:
                     df.loc[i,'인플레이션 반영가'] = df.loc[i,'소매일일가격'] / infletion_score.loc[year,'소비자물가총지수']
+    
+    for data in df_list:
+        data.drop('소매일일가격', axis=1, inplace=True)

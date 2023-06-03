@@ -7,7 +7,7 @@ def setting2(data_list):
     for data in data_list:
         data.drop("Unnamed: 0", axis=1, inplace=True)
         data.drop("Unnamed: 0.1", axis=1, inplace=True)
-        data.drop("Unnamed: 0.1.1", axis=1, inplace=True)
+        data.drop("Unnamed: 0.2", axis=1, inplace=True)
 
 def draw_corr_heatmap(data_list, data_name_list):
     for data, data_name in zip(data_list, data_name_list):

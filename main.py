@@ -9,6 +9,11 @@ from removeOutlier import removeOutliers
 from correlation import draw_corr_heatmap, setting2
 from exploration import data_exploration, setting_exploration
 from inflation import reflact_inflation
+from select_feature import feature_cabbage, feature_garlic, feature_pepper, feature_radish
+from test_train_divide import divideData
+from normarlize import standardScale
+from multipleRegression import multiple_regression, dataDropna
+from KMeans import kMeans
 
 # ==============================================
 # 1. Load Datasets
@@ -145,7 +150,6 @@ name_list = ["Garlic", "Napa Cabbage", "Radish", "Pepper"]
 
 setting2(df_list)
 draw_corr_heatmap(df_list, name_list)
-plt.show()
 
 # ==============================================
 # 8. Reflect inflation on data
@@ -165,4 +169,58 @@ reflact_inflation(df_list, inflation_df)
 # ==============================================
 print('Correlation among features with inflation------------------------------------------------------------------------------------------------------------------------------------------------')
 draw_corr_heatmap(df_list, name_list)
+
+# ==============================================
+# 10. Select features
+# ==============================================
+print('Select Features----------------------------------------------------------------------------------------------------------------------------------------------------------------------')
+feature_radish(radish_df)
+feature_cabbage(napa_cabbage_df)
+feature_garlic(garlic_df)
+feature_pepper(pepper_df)
+
+#drop nan 
+dataDropna(radish_df)
+dataDropna(napa_cabbage_df)
+dataDropna(garlic_df)
+dataDropna(pepper_df)
+# ==============================================
+# 11. Divide dataset to train, test dataset
+# ==============================================
+print('Divide dataset to train, test dataset------------------------------------------------------------------------------------------------------------------------------------------------')
+radish_x_train, radish_x_test, radish_y_train, radish_y_test = divideData(radish_df)
+cabbage_x_train, cabbage_x_test, cabbage_y_train, cabbage_y_test = divideData(napa_cabbage_df)
+garlic_x_train, garlic_x_test, garlic_y_train, garlic_y_test = divideData(garlic_df)
+pepper_x_train, pepper_x_test, pepper_y_train, pepper_y_test = divideData(pepper_df)
+
+# ==============================================
+# 12. Normarlize dataset
+# ==============================================
+print('Normarlize dataset-------------------------------------------------------------------------------------------------------------------------------------------------------------------')
+train_x_list=[radish_x_train, cabbage_x_train, garlic_x_train, pepper_x_train]
+test_x_list=[radish_x_test, cabbage_x_test, garlic_x_test, pepper_x_test]
+
+standardScale(train_x_list)
+standardScale(test_x_list)
+
+# ==============================================
+# 13. Multiple Regression
+# ==============================================
+print('Multiple Regression------------------------------------------------------------------------------------------------------------------------------------------------------------------')
+scaled_train_x_list=[radish_x_train, cabbage_x_train, garlic_x_train, pepper_x_train]
+scaled_test_x_list=[radish_x_test, cabbage_x_test, garlic_x_test, pepper_x_test]
+train_y_list=[radish_y_train, cabbage_y_train, garlic_y_train, pepper_y_train]
+test_y_list=[radish_y_test, cabbage_y_test, garlic_y_test, pepper_y_test]
+name_list=["Radish", "Napa Cabbage", "Garlic", "Pepper"]
+
+multiple_regression(scaled_train_x_list, scaled_test_x_list, train_y_list, test_y_list, name_list)
+
+# ==============================================
+# 14. K-Means Clustering
+# ==============================================
+df_list = [garlic_df, napa_cabbage_df, radish_df, pepper_df]
+
+standardScale(df_list)
+
+kMeans(df_list, name_list)
 plt.show()
