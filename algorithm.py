@@ -60,8 +60,6 @@ def add_previous_feature(df_list, name_list):
     date_format = "%Y-%m-%d"  # 날짜 형식
 
     for df, name in zip(df_list, name_list):
-        if name == '마늘':
-            continue
 
         for idx in df.index:
                 df.loc[idx, '일시'] = datetime.strptime(df.loc[idx, '일시'], date_format)
