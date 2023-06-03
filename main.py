@@ -10,7 +10,7 @@ from correlation import draw_corr_heatmap, setting2
 from exploration import data_exploration, setting_exploration
 from inflation import reflect_inflation
 from algorithm import find_best_feature_combination, run_multipleRegression, visualizeDistribution, add_previous_feature
-from dataClassification import final_df_classification
+from dataClassification import final_df_classification, knn_classification
 
 plt.rcParams['font.family'] = 'Malgun Gothic'
 # ==============================================
@@ -190,4 +190,22 @@ pepper_df = pd.read_csv("add_previous_feature/건고추_df.csv", low_memory=Fals
 df_list = [garlic_df, napa_cabbage_df, radish_df, pepper_df]
 name_list = ["garlic", "napa_cabbage", "radish", "pepper"]
 
+
+print('Setting for Classification--------------------------------------------------------------------------------------------------------------------------------------------')
 final_df_classification(df_list, name_list)
+
+garlic_df = pd.read_csv("final_df_classification/garlic_df.csv", low_memory=False)
+napa_cabbage_df = pd.read_csv("final_df_classification/napa_cabbage_df.csv", low_memory=False)
+radish_df = pd.read_csv("final_df_classification/radish_df.csv", low_memory=False)
+pepper_df = pd.read_csv("final_df_classification/pepper_df.csv", low_memory=False)
+df_list = [garlic_df, napa_cabbage_df, radish_df, pepper_df]
+name_list = ["garlic", "napa_cabbage", "radish"]
+
+data_exploration(df_list, name_list)
+
+
+print('KNN Model--------------------------------------------------------------------------------------------------------------------------------------------')
+acc_scale_model = knn_classification(df_list, name_list, 3)
+print(acc_scale_model)
+for key, value in acc_scale_model.items():
+    print("{} KNN Accuracy : train =  {}, test = {}".format(key, value[0], value[1]))
