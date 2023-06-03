@@ -46,3 +46,5 @@ correlation.py
 ```
 python main.py
 ```
+
+![image](https://github.com/Ginieee/23-1-DS_Termproject/assets/94692391/73d6f87a-c5b2-473e-9643-c4c0e911f3d4)
