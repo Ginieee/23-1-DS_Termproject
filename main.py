@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 import seaborn as sns
+import matplotlib.pyplot as plt
 from merge_df import extract_datetime, rename_features, merge_dataset
 from addDirtyData import setting, addDirtyData
 from removeDirtyData import remove_save
@@ -9,7 +9,9 @@ from removeOutlier import removeOutliers
 from correlation import draw_corr_heatmap, setting2
 from exploration import data_exploration, setting_exploration
 from inflation import reflact_inflation
+from algorithm import find_best_feature_combination, run_multipleRegression, visualizeDistribution, add_previous_feature
 
+plt.rcParams['font.family'] = 'Malgun Gothic'
 # ==============================================
 # 1. Load Datasets
 # ==============================================
@@ -145,7 +147,7 @@ name_list = ["Garlic", "Napa Cabbage", "Radish", "Pepper"]
 
 setting2(df_list)
 draw_corr_heatmap(df_list, name_list)
-plt.show()
+# plt.show()
 
 # ==============================================
 # 8. Reflect inflation on data
@@ -163,6 +165,18 @@ reflact_inflation(df_list, inflation_df)
 # ==============================================
 # 9. Correlation amongst features with inflation
 # ==============================================
-print('Correlation among features with inflation------------------------------------------------------------------------------------------------------------------------------------------------')
-draw_corr_heatmap(df_list, name_list)
-plt.show()
+# print('Correlation among features with inflation------------------------------------------------------------------------------------------------------------------------------------------------')
+# draw_corr_heatmap(df_list, name_list)
+# plt.show()
+
+# ==============================================
+# 10. 
+# ==============================================
+for df in df_list:
+    print(df)
+    print("drop")
+    df.dropna(subset=['인플레이션 반영가'], axis = 0, inplace=True)
+    print(df)
+    print("--------------")
+
+add_previous_feature(df_list, item_list)
