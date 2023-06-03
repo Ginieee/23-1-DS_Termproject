@@ -218,6 +218,7 @@ multiple_regression(scaled_train_x_list, scaled_test_x_list, train_y_list, test_
 # ==============================================
 # 14. K-Means Clustering
 # ==============================================
+print('K-means Clustering------------------------------------------------------------------------------------------------------------------------------------------------------------------')
 df_list = [garlic_df, napa_cabbage_df, radish_df, pepper_df]
 
 standardScale(df_list)

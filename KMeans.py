@@ -6,8 +6,9 @@ from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 
 def kMeans(df_list, name_list):
-    for df, name in zip(df_list, name_list):
-        fig, ax = plt.subplots(1, 1)
+    fig, ax = plt.subplots(1, 4)
+    for df, name, index in zip(df_list, name_list, range(4)):
+        
         
         #두개의 PCA로 feature 묶음
         pca = PCA(n_components=2)
@@ -19,8 +20,8 @@ def kMeans(df_list, name_list):
         kmeans = KMeans(n_clusters=3)
         #centroids = kmeans.cluster_centers_
         kmeans.fit(df_pca)
-        ax.scatter(df_pca['PCA1'], df_pca['PCA2'], c=kmeans.labels_.astype(float), s=50, alpha=0.5)
+        ax[index].scatter(df_pca['PCA1'], df_pca['PCA2'], c=kmeans.labels_.astype(float), s=50, alpha=0.5)
         #ax.scatter(centroids[:, 0], centroids[:, 1], c='red', s=50)
-        ax.set_xlabel('PCA1')
-        ax.set_ylabel('PCA2')
-        ax.set_title(f'Cluser of {name}')
+        ax[index].set_xlabel('PCA1')
+        ax[index].set_ylabel('PCA2')
+        ax[index].set_title(f'Cluser of {name}')
