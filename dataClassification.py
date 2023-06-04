@@ -17,7 +17,6 @@ def final_df_classification(df_list, name_list):
         df['일시'] = pd.to_datetime(df['일시'])
 
         # 1999년 데이터 버림
-        df['일시'] = pd.to_datetime(df['일시'])
         df = df[df['일시'].dt.year != 1999]
 
         # 11~12월 데이터만 남김
@@ -47,7 +46,8 @@ def knn_classification(df_list, name_list, k):
     acc_scale_model = {}
 
     for df, name in zip(df_list, name_list):
-        df.drop(['Unnamed: 0', 'Unnamed: 1', '일시', '품목'], axis=1, inplace=True)
+        df.drop(['Unnamed: 0', 'Unnamed: 0.1', 'Unnamed: 0.1.1', '일시', '품목'], axis=1, inplace=True)
+        df = df[['연도', '인플레이션 반영가', '가격']]
 
         df_train = df[df['연도'] < 2021]  # 분할 순서 변경
         df_test = df[df['연도'] >= 2021]   # 분할 순서 변경

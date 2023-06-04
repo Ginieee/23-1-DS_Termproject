@@ -11,6 +11,7 @@ from exploration import data_exploration, setting_exploration
 from inflation import reflect_inflation
 from algorithm import find_best_feature_combination, run_multipleRegression, visualizeDistribution, add_previous_feature
 from dataClassification import final_df_classification, knn_classification
+from kmeans_algorithm import perform_pca, plot_cumulative_variance_ratio, multiple_kmeans_algorithm, calculate_cumulative_variance_ratio, do_multiple_kmeans
 
 plt.rcParams['font.family'] = 'Malgun Gothic'
 # ==============================================
@@ -147,7 +148,7 @@ df_list = [garlic_df, napa_cabbage_df, radish_df, pepper_df]
 name_list = ["Garlic", "Napa Cabbage", "Radish", "Pepper"]
 
 setting2(df_list)
-draw_corr_heatmap(df_list, name_list)
+# draw_corr_heatmap(df_list, name_list)
 # plt.show()
 
 # ==============================================
@@ -187,25 +188,16 @@ napa_cabbage_df = pd.read_csv("add_previous_feature/배추_df.csv", low_memory=F
 radish_df = pd.read_csv("add_previous_feature/무_df.csv", low_memory=False)
 pepper_df = pd.read_csv("add_previous_feature/건고추_df.csv", low_memory=False)
 
+
+print('Previous price--------------------------------------------------------------------------------------------------------------------------------------------')
+garlic_df = pd.read_csv("add_price/마늘_price_df.csv", low_memory=False)
+napa_cabbage_df = pd.read_csv("add_price/배추_price_df.csv", low_memory=False)
+radish_df = pd.read_csv("add_price/무_price_df.csv", low_memory=False)
+pepper_df = pd.read_csv("add_price/건고추_price_df.csv", low_memory=False)
 df_list = [garlic_df, napa_cabbage_df, radish_df, pepper_df]
 name_list = ["garlic", "napa_cabbage", "radish", "pepper"]
-
-
-print('Setting for Classification--------------------------------------------------------------------------------------------------------------------------------------------')
-final_df_classification(df_list, name_list)
-
-garlic_df = pd.read_csv("final_df_classification/garlic_df.csv", low_memory=False)
-napa_cabbage_df = pd.read_csv("final_df_classification/napa_cabbage_df.csv", low_memory=False)
-radish_df = pd.read_csv("final_df_classification/radish_df.csv", low_memory=False)
-pepper_df = pd.read_csv("final_df_classification/pepper_df.csv", low_memory=False)
-df_list = [garlic_df, napa_cabbage_df, radish_df, pepper_df]
-name_list = ["garlic", "napa_cabbage", "radish"]
-
 data_exploration(df_list, name_list)
 
-
-print('KNN Model--------------------------------------------------------------------------------------------------------------------------------------------')
-acc_scale_model = knn_classification(df_list, name_list, 3)
-print(acc_scale_model)
-for key, value in acc_scale_model.items():
-    print("{} KNN Accuracy : train =  {}, test = {}".format(key, value[0], value[1]))
+print('Multiple KMeans--------------------------------------------------------------------------------------------------------------------------------------------')
+do_multiple_kmeans(df_list, name_list)
+plt.show()

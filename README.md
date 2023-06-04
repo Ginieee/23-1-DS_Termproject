@@ -40,6 +40,10 @@ correlation.py
 ```
 ### 7) 사용할 feature 선택
 ### 8) 학습알고리즘 적용 
+#### - KMeans 알고리즘 :
+```
+kmeans_algorithm.py
+```
 
 ---
 #### - 파일 실행
