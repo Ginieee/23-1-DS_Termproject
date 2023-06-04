@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-from algorithm import find_best_feature_combination, multipleRegression, visualizeDistribution, add_previous_feature, add_previous_price_feature
+from algorithm import find_best_feature_combination, multipleRegression, visualizeDistribution
 from sklearn.preprocessing import StandardScaler, Normalizer
 from sklearn.decomposition import PCA
 
@@ -35,7 +35,15 @@ def load_dataset():
 
     return df_list, target_df_list, item_list
 
-def drop_unusable_feature(df_list, target_df_list, item_list):
+def drop_unusable_feature(df_list, item_list):
+    
+    garlic_target_df = pd.DataFrame([])
+    napa_cabbage_target_df = pd.DataFrame([])
+    radish_target_df= pd.DataFrame([])
+    pepper_target_df = pd.DataFrame([])
+
+    target_df_list = [garlic_target_df, napa_cabbage_target_df, radish_target_df, pepper_target_df]
+
     for i, (df, target_df, item) in enumerate(zip(df_list, target_df_list, item_list)):
         start_with = "직전 "
         except_list = ['직전 3달 인플레이션 반영가', "직전 4달 인플레이션 반영가", "직전 5달 인플레이션 반영가","직전 6달 인플레이션 반영가"]
@@ -71,7 +79,6 @@ def drop_unusable_feature(df_list, target_df_list, item_list):
         print(target_df)
 
     return df_list, target_df_list
-
 
 # https://pink371010.medium.com/pca-8b66c798bb8
 # Apply PCA to each dataframe
@@ -110,9 +117,9 @@ def apply_PCA(df_list, target_df_list):
 
     return df_list
 
-def run_multiple_linear_regression():
-    df_list, target_df_list, item_list = load_dataset()
-    df_list, target_df_list = drop_unusable_feature(df_list, target_df_list, item_list)
+def run_multiple_linear_regression(df_list, item_list):
+    # df_list, target_df_list, item_list = load_dataset()
+    df_list, target_df_list = drop_unusable_feature(df_list, item_list)
     df_list = apply_PCA(df_list, target_df_list)
     
     for df, item in zip(df_list, item_list):
