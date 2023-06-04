@@ -17,5 +17,5 @@ def draw_corr_heatmap(data_list, data_name_list):
         data_cor = data.corr()
         
         #각 feature의 correlation을 heatmap으로 그림
-        # sns.heatmap(data_cor, annot=True, fmt='.2f')
-        # ax.set_title(data_name)
+        sns.heatmap(data_cor, annot=True, fmt='.2f')
+        ax.set_title(data_name)

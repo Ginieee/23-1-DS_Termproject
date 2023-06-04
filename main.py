@@ -148,38 +148,32 @@ df_list = [garlic_df, napa_cabbage_df, radish_df, pepper_df]
 name_list = ["Garlic", "Napa Cabbage", "Radish", "Pepper"]
 
 setting2(df_list)
-# draw_corr_heatmap(df_list, name_list)
-# plt.show()
+draw_corr_heatmap(df_list, name_list)
+plt.show()
 
 # ==============================================
 # 8. Reflect inflation on data
 # ==============================================
 # Taking Inflation into DataFrame
-print('Read Inflation Data ----------------------------------------------------------------------------------------------------------------------------------------------------------')
+print('Read Inflation Data ----------------------------------------------------------------------------------------------------------------------------------')
 inflation_df = pd.read_excel("original_dataset/consumer_price_index.xlsx")
 
-print('Data Exploration of Inflation Data--------------------------------------------------------------------------------------------------------------------------------------------')
+print('Data Exploration of Inflation Data ----------------------------------------------------------------------------------------------------------------------')
 data_exploration([inflation_df], ["Inflation DataFrame"])
 
-print('Reflect inflation on target--------------------------------------------------------------------------------------------------------------------------------------------')
+print('Reflect inflation on target -------------------------------------------------------------------------------------------------------------')
 reflect_inflation(df_list, inflation_df)
 
 # ==============================================
 # 9. Correlation amongst features with inflation
 # ==============================================
-# print('Correlation among features with inflation------------------------------------------------------------------------------------------------------------------------------------------------')
-# draw_corr_heatmap(df_list, name_list)
-# plt.show()
+print('Correlation among features with inflation ----------------------------------------------------------------------------------------------------------------')
+draw_corr_heatmap(df_list, name_list)
+plt.show()
 
 # ==============================================
 # 10.
 # ==============================================
-# for df in df_list:
-#     print(df)
-#     print("drop")
-#     df.dropna(subset=['인플레이션 반영가'], axis = 0, inplace=True)
-#     print(df)
-#     print("--------------")
 
 #add_previous_feature(df_list, item_list)
 
@@ -198,6 +192,9 @@ df_list = [garlic_df, napa_cabbage_df, radish_df, pepper_df]
 name_list = ["garlic", "napa_cabbage", "radish", "pepper"]
 data_exploration(df_list, name_list)
 
+# ==============================================
+# 12. KMeans Clustering
+# ==============================================
 print('Multiple KMeans--------------------------------------------------------------------------------------------------------------------------------------------')
 do_multiple_kmeans(df_list, name_list)
 plt.show()
