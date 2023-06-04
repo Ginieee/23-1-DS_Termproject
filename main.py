@@ -6,7 +6,7 @@ from merge_df import extract_datetime, rename_features, merge_dataset
 from addDirtyData import setting, addDirtyData
 from removeDirtyData import remove_save
 from removeOutlier import removeOutliers
-from correlation import draw_corr_heatmap, setting2
+from correlation import draw_corr_heatmap, setting2, drop_non_numeric_Features
 from exploration import data_exploration, setting_exploration
 from inflation import reflect_inflation
 from algorithm import find_best_feature_combination, run_multipleRegression, visualizeDistribution, add_previous_feature
@@ -147,8 +147,9 @@ pepper_df = pd.read_csv("remove_outlier/pepper_df.csv", low_memory=False)
 df_list = [garlic_df, napa_cabbage_df, radish_df, pepper_df]
 name_list = ["Garlic", "Napa Cabbage", "Radish", "Pepper"]
 
+df_list = drop_non_numeric_Features(df_list)
 setting2(df_list)
-draw_corr_heatmap(df_list, name_list)
+draw_corr_heatmap(df_list, name_list, "소매일일가격")
 plt.show()
 
 # ==============================================
@@ -168,7 +169,8 @@ reflect_inflation(df_list, inflation_df)
 # 9. Correlation amongst features with inflation
 # ==============================================
 print('Correlation among features with inflation ----------------------------------------------------------------------------------------------------------------')
-draw_corr_heatmap(df_list, name_list)
+df_list = drop_non_numeric_Features(df_list)
+draw_corr_heatmap(df_list, name_list, "인플레이션 반영가")
 plt.show()
 
 # ==============================================
@@ -197,4 +199,3 @@ data_exploration(df_list, name_list)
 # ==============================================
 print('Multiple KMeans--------------------------------------------------------------------------------------------------------------------------------------------')
 do_multiple_kmeans(df_list, name_list)
-plt.show()

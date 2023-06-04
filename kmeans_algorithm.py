@@ -4,39 +4,49 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 
 from sklearn.decomposition import PCA
+from correlation import scale_dataframe, drop_non_numeric_Features
 
 
 def do_multiple_kmeans(df_list, name_list):
-    pca_df_list = []
-    for df in df_list:
-        df.drop(['Unnamed: 0', 'Unnamed: 0.1'], axis = 1, inplace = True)
-        df = df[df['연도'] > 1999]
-        # select useful features for pca
-        df = df[['수출(달러)', '수입(달러)', '직전 2달 평균기온(°C)', '직전 2달 평균 상대습도(%)', '직전 2달 합계 일사량(MJ/m2)', '직전 2달 평균 풍속(m/s)', '직전 2달 최대 풍속(m/s)', '직전 2달 최고기온(°C)', '직전 2달 최저기온(°C)', '직전 2달 평균 지면온도(°C)', '직전 1달 평균기온(°C)', '직전 1달 평균 상대습도(%)', '직전 1달 합계 일사량(MJ/m2)', '직전 1달 평균 풍속(m/s)', '직전 1달 최대 풍속(m/s)', '직전 1달 최고기온(°C)', '직전 1달 최저기온(°C)', '직전 1달 평균 지면온도(°C)', '인플레이션 반영가']]
+    scale_list = ["standard", "minmax", "robust"]
+    for scale in scale_list: # do 3 scaling
+        pca_df_list = []
+        for df in df_list:
+            df = df.drop(['Unnamed: 0', 'Unnamed: 0.1'], axis=1)
+            df = df[df['연도'] > 1999]
+            # select useful features for pca
+            df = df[
+                ['수출(달러)', '수입(달러)', '직전 2달 평균기온(°C)', '직전 2달 평균 상대습도(%)', '직전 2달 합계 일사량(MJ/m2)', '직전 2달 평균 풍속(m/s)',
+                 '직전 2달 최대 풍속(m/s)', '직전 2달 최고기온(°C)', '직전 2달 최저기온(°C)', '직전 2달 평균 지면온도(°C)', '직전 1달 평균기온(°C)',
+                 '직전 1달 평균 상대습도(%)', '직전 1달 합계 일사량(MJ/m2)', '직전 1달 평균 풍속(m/s)', '직전 1달 최대 풍속(m/s)', '직전 1달 최고기온(°C)',
+                 '직전 1달 최저기온(°C)', '직전 1달 평균 지면온도(°C)', '인플레이션 반영가']]
 
-        # doing pca
-        pca_df = perform_pca(df, '인플레이션 반영가')
-        pca_df_list.append(pca_df)
+            df = scale_dataframe(df, scale, "인플레이션 반영가")
 
-    # doing kmeans clustering algorithm with pca dataframe
-    for i, (df, name) in enumerate(zip(pca_df_list, name_list)):
-        multiple_kmeans_algorithm(df, name, df.columns[:-1], df.columns[-1])
+            # doing pca
+            pca_df = perform_pca(df, '인플레이션 반영가')
+            pca_df_list.append(pca_df)
+
+        # doing kmeans clustering algorithm with pca dataframe
+        for i, (data, name) in enumerate(zip(pca_df_list, name_list)):
+            multiple_kmeans_algorithm(scale, data, name, data.columns[:-1], data.columns[-1])
+
+        plt.show()
 
 
-def multiple_kmeans_algorithm(df, title, column_list, target):
-    kmeans = KMeans(n_clusters=3).fit(df) # n_clusters=3 since we expected the price low, middle, high
-    centroids = kmeans.cluster_centers_
+def multiple_kmeans_algorithm(scale, df, title, column_list, target):
+    kmeans = KMeans(n_clusters=3).fit(df)  # n_clusters=3 since we expected the price low, middle, high
     pred = kmeans.predict(df)
 
     # draw the result of kmeans
     fig = plt.figure(figsize=(6, 6))
     ax = fig.add_subplot(111, projection='3d')
 
-    ax.scatter(df[column_list[0]], df[column_list[1]], df[target], c=pred)  # 3D 산점도 그리기
+    ax.scatter(df[column_list[0]], df[column_list[1]], df[target], c=pred) # 3 dimensional scatter plot
     ax.set_xlabel(column_list[0])
     ax.set_ylabel(column_list[1])
     ax.set_zlabel(target)
-    ax.set_title("Multiple KMeans : {}".format(title))
+    ax.set_title("Multiple KMeans with {} scaler : {}".format(scale, title))
 
 
 def perform_pca(df, target):
@@ -45,7 +55,7 @@ def perform_pca(df, target):
     features = df.drop(columns=[target])
     features.reset_index(drop=True, inplace=True)
 
-    pca = PCA(n_components=2) # 2 was determined by the result of calculate_cumulative_variance_ration
+    pca = PCA(n_components=2)  # 2 was determined by the result of calculate_cumulative_variance_ration
     pca_result = pca.fit_transform(features)
 
     pca_df = pd.DataFrame(data=pca_result, columns=['PC1', 'PC2'])
