@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 from sklearn.preprocessing import PolynomialFeatures
 import numpy as np
+from sklearn.metrics import r2_score
         
 # feature리스트에서 error가 최소가 되는 최적의 조합을 찾는 함수
 def find_best_feature_combination(df_list, item_list, feature_list, train_size):
@@ -77,7 +78,9 @@ def multipleRegression(df, item, train_size):
 
     y_predict = mlr.predict(x_test)
     mse = mean_squared_error(y_test, y_predict)
+    r2 = r2_score(y_test, y_predict)
     print("error: ", mse)
+    print(f"{item} r2 : ", r2)
 
     # Plot the scatter plot of predicted vs. actual values with regression line
     plt.scatter(y_test, y_predict, alpha=0.4)

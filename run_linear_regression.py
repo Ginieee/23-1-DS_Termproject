@@ -74,9 +74,9 @@ def drop_unusable_feature(df_list, item_list):
 
         df_list[i] = df
         target_df_list[i] = target_df
-        print(df)
-        print('target')
-        print(target_df)
+        # print(df)
+        # print('target')
+        # print(target_df)
 
     return df_list, target_df_list
 
