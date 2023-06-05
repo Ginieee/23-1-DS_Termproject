@@ -248,7 +248,7 @@ name_list = ["garlic", "napa_cabbage", "radish", "pepper"]
 bagging_multiple_regression(df_list, name_list)
 #bagging_polynomial_regression(df_list, name_list, degree=3)
 # ==============================================
-# 15. Evaluation - 2) XGBoost
+# 16. Evaluation - 2) XGBoost
 # ==============================================
 print('XGBoost----------------------------------------------------------------------------------------------------------------------------------------------------------------')
 garlic_df = pd.read_csv("add_price/마늘_price_df.csv", low_memory=False)
@@ -258,5 +258,5 @@ pepper_df = pd.read_csv("add_price/건고추_price_df.csv", low_memory=False)
 df_list = [garlic_df, napa_cabbage_df, radish_df, pepper_df]
 name_list = ["garlic", "napa_cabbage", "radish", "pepper"]
 
-XGB_multiple_regression(df_list, name_list)
+#XGB_multiple_regression(df_list, name_list)
 #XGB_polynomial_regression(df_list, name_list, degree=3)
