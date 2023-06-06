@@ -4,14 +4,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from merge_df import extract_datetime, rename_features, merge_dataset
 from addDirtyData import setting, addDirtyData
-<<<<<<< Updated upstream
-from removeDirtyData import remove_save
-from removeOutlier import removeOutliers
-from correlation import draw_corr_heatmap, setting2
-from exploration import data_exploration, setting_exploration
-from inflation import reflact_inflation
-from algorithm import find_best_feature_combination, run_multipleRegression, visualizeDistribution, add_previous_feature
-=======
 from removeDirtyData import remove_save, compare_dirty_data
 from removeOutlier import removeOutliers, compare_outliers
 from correlation import draw_corr_heatmap, setting2, drop_non_numeric_Features
@@ -25,7 +17,6 @@ from run_linear_regression import run_multiple_linear_regression,run_linear_regr
 from run_polynomial_regression import run_polynomial_regression
 from sklearn.feature_selection import f_regression, SelectKBest
 from sklearn.preprocessing import StandardScaler, Normalizer
->>>>>>> Stashed changes
 
 plt.rcParams['font.family'] = 'Malgun Gothic'
 # # ==============================================
@@ -241,43 +232,6 @@ compare_outliers(df_list.copy(), data_list_after, ['수입(kg)', '최대 풍속(
 # # draw_corr_heatmap(df_list, name_list, "소매일일가격")
 # # plt.show()
 
-<<<<<<< Updated upstream
-setting2(df_list)
-draw_corr_heatmap(df_list, name_list)
-# plt.show()
-
-# ==============================================
-# 8. Reflect inflation on data
-# ==============================================
-# Taking Inflation into DataFrame
-print('Read Inflation Data ----------------------------------------------------------------------------------------------------------------------------------------------------------')
-inflation_df = pd.read_excel("original_dataset/consumer_price_index.xlsx")
-
-print('Data Exploration of Inflation Data--------------------------------------------------------------------------------------------------------------------------------------------')
-data_exploration([inflation_df], ["Inflation DataFrame"])
-
-print('Reflect inflation on target--------------------------------------------------------------------------------------------------------------------------------------------')
-reflact_inflation(df_list, inflation_df)
-
-# ==============================================
-# 9. Correlation amongst features with inflation
-# ==============================================
-# print('Correlation among features with inflation------------------------------------------------------------------------------------------------------------------------------------------------')
-# draw_corr_heatmap(df_list, name_list)
-# plt.show()
-
-# ==============================================
-# 10. 
-# ==============================================
-for df in df_list:
-    print(df)
-    print("drop")
-    df.dropna(subset=['인플레이션 반영가'], axis = 0, inplace=True)
-    print(df)
-    print("--------------")
-
-add_previous_feature(df_list, item_list)
-=======
 # # # ==============================================
 # # # 10. Correlation amongst features with inflation
 # # # ==============================================
@@ -438,4 +392,3 @@ add_previous_feature(df_list, item_list)
 #     predict = model.predict(x)
 #     print("예측한 값: ", predict)
 #     print("실제 값: ", y)
->>>>>>> Stashed changes

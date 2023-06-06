@@ -327,21 +327,12 @@ def find_best_feature_combination(df_list, item_list, feature_list, train_size):
 
     return best_combination
 
-<<<<<<< Updated upstream
-                    # plt.scatter(y_test, y_predict, alpha=0.4)
-                    # plt.xlabel("Actual value")
-                    # plt.ylabel("Predicted value")
-                    # plt.title("MULTIPLE LINEAR REGRESSION - " + item + " - Features: " + ', '.join(combination))
-                    # plt.show(
-
-=======
 # multiple linear regression을 돌리는 함수
 def multipleRegression(df, item, train_size):
     
     y = df['인플레이션 반영가']
     x = df.drop('인플레이션 반영가', axis=1)
     
->>>>>>> Stashed changes
 
 def run_multipleRegression(df_list, item_list, combination_list, train_size):
     for df, item, feature in zip(df_list, item_list, combination_list):
@@ -350,22 +341,6 @@ def run_multipleRegression(df_list, item_list, combination_list, train_size):
         
         x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=train_size, test_size=(1-train_size), shuffle=True, random_state=1)
 
-<<<<<<< Updated upstream
-        mlr = LinearRegression()
-        mlr.fit(x_train, y_train) 
-
-        y_predict = mlr.predict(x_test)
-        mse = mean_squared_error(y_test, y_predict)
-        print("error: ", mse)
-
-        plt.scatter(y_test, y_predict, alpha=0.4)
-        plt.xlabel("Actual value")
-        plt.ylabel("Predicted value")
-        plt.title("MULTIPLE LINEAR REGRESSION - " + item + " - Features: " + ', '.join(feature))
-        plt.axis('equal')
-        plt.show()
-        
-=======
     # print("x: ", x)
     mlr = LinearRegression()
     mlr.fit(x_train, y_train)
@@ -423,7 +398,6 @@ def plot_regression_line(x, y, y_predict):
     # Plot the scatter plot of predicted vs. actual values
     plt.scatter(x, y, alpha=0.4, label='Actual')
     plt.scatter(x, y_predict, alpha=0.4, label='Predicted')
->>>>>>> Stashed changes
     
 def visualizeDistribution(df_list, feature_name):
     for df in df_list:
