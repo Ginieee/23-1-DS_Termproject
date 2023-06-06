@@ -327,12 +327,21 @@ def find_best_feature_combination(df_list, item_list, feature_list, train_size):
 
     return best_combination
 
+<<<<<<< Updated upstream
                     # plt.scatter(y_test, y_predict, alpha=0.4)
                     # plt.xlabel("Actual value")
                     # plt.ylabel("Predicted value")
                     # plt.title("MULTIPLE LINEAR REGRESSION - " + item + " - Features: " + ', '.join(combination))
                     # plt.show(
 
+=======
+# multiple linear regression을 돌리는 함수
+def multipleRegression(df, item, train_size):
+    
+    y = df['인플레이션 반영가']
+    x = df.drop('인플레이션 반영가', axis=1)
+    
+>>>>>>> Stashed changes
 
 def run_multipleRegression(df_list, item_list, combination_list, train_size):
     for df, item, feature in zip(df_list, item_list, combination_list):
@@ -341,6 +350,7 @@ def run_multipleRegression(df_list, item_list, combination_list, train_size):
         
         x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=train_size, test_size=(1-train_size), shuffle=True, random_state=1)
 
+<<<<<<< Updated upstream
         mlr = LinearRegression()
         mlr.fit(x_train, y_train) 
 
@@ -355,6 +365,65 @@ def run_multipleRegression(df_list, item_list, combination_list, train_size):
         plt.axis('equal')
         plt.show()
         
+=======
+    # print("x: ", x)
+    mlr = LinearRegression()
+    mlr.fit(x_train, y_train)
+
+    y_train_predict = mlr.predict(x_train)
+    train_mse = mean_squared_error(y_train, y_train_predict)
+
+    y_test_predict = mlr.predict(x_test)
+    test_mse = mean_squared_error(y_test, y_test_predict)
+
+    print("Train MSE: ", train_mse)
+    print("Test MSE: ", test_mse)
+
+    coefficients = mlr.coef_
+    coefficients_rounded = [round(coef, 2) for coef in coefficients]
+    print(coefficients_rounded)
+    print("회귀식의 계수: ", coefficients_rounded)
+
+    # Plot the scatter plot of predicted vs. actual values with regression line
+    plt.scatter(y_test, y_test_predict, alpha=0.4)
+    plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], color='red', linestyle='--', linewidth=2, label='Regression Line')
+    plt.xlabel("Actual value")
+    plt.ylabel("Predicted value")
+    plt.title("MULTIPLE LINEAR REGRESSION - " + item)
+    plt.legend()
+    plt.show()
+
+    return coefficients_rounded, mlr
+
+def linearRegression(df, target_df, item, train_size, col_name):
+
+    x = df.to_frame()
+    y = target_df
+
+    x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=train_size, test_size=(1-train_size), shuffle=True, random_state=1)
+
+    lr = LinearRegression()
+    lr.fit(x_train, y_train)
+
+    y_predict = lr.predict(x_test)
+    mse = mean_squared_error(y_test, y_predict)
+    print("error: ", mse)
+
+    # Plot the scatter plot of predicted vs. actual values with regression line
+    plt.scatter(y_test, y_predict, alpha=0.4)
+    plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], color='red', linestyle='--', linewidth=2, label='Regression Line')
+    plt.xlabel("Actual value")
+    plt.ylabel("Predicted value")
+    plt.title("MULTIPLE LINEAR REGRESSION - " + item + " feature - " + col_name) 
+    plt.legend()
+    plt.show()
+
+# regression line을 그려주는 함수
+def plot_regression_line(x, y, y_predict):
+    # Plot the scatter plot of predicted vs. actual values
+    plt.scatter(x, y, alpha=0.4, label='Actual')
+    plt.scatter(x, y_predict, alpha=0.4, label='Predicted')
+>>>>>>> Stashed changes
     
 def visualizeDistribution(df_list, feature_name):
     for df in df_list:
