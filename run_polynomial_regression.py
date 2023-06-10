@@ -24,7 +24,6 @@ def polynomial_regression(df, target, degree):
     
     # Compute and print the score (R-squared) of the model
     print('score: ', model.score(x_poly, y))    
-
     # Plot the scatter plot of predicted vs. actual values
     plt.scatter(y, y_predict, alpha=0.4)
     plt.xlabel("Actual value")

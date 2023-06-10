@@ -17,6 +17,22 @@ from run_linear_regression import run_multiple_linear_regression,run_linear_regr
 from run_polynomial_regression import run_polynomial_regression
 from sklearn.feature_selection import f_regression, SelectKBest
 from sklearn.preprocessing import StandardScaler, Normalizer
+from removeDirtyData import remove_save
+from removeOutlier import removeOutliers
+from correlation import draw_corr_heatmap, setting2, drop_non_numeric_Features
+from exploration import data_exploration, setting_exploration
+from inflation import reflect_inflation
+from algorithm import find_best_feature_combination
+from dataClassification import final_df_classification, knn_classification
+from kmeans_algorithm import perform_pca, plot_cumulative_variance_ratio, multiple_kmeans_algorithm, calculate_cumulative_variance_ratio, do_multiple_kmeans
+from add_previous_value import add_previous_feature, add_previous_price_feature
+from run_linear_regression import run_multiple_linear_regression
+from run_polynomial_regression import run_polynomial_regression
+import warnings
+from evaluation import bagging_multiple_regression, bagging_polynomial_regression, XGB_multiple_regression, XGB_polynomial_regression
+
+warnings.filterwarnings('ignore')
+
 
 plt.rcParams['font.family'] = 'Malgun Gothic'
 # # ==============================================
@@ -422,3 +438,30 @@ for df, model in zip(df_for_predict_list, model_list):
     print("예측한 값\t실제 값")
     for pred, actual in zip(predict, y):
         print(f"{pred:.2f}\t\t{actual:.2f}")
+
+# ==============================================
+# 15. Evaluation - 1) Bagging
+# ==============================================
+print('Bagging----------------------------------------------------------------------------------------------------------------------------------------------------------------')
+garlic_df = pd.read_csv("add_price/마늘_price_df.csv", low_memory=False)
+napa_cabbage_df = pd.read_csv("add_price/배추_price_df.csv", low_memory=False)
+radish_df = pd.read_csv("add_price/무_price_df.csv", low_memory=False)
+pepper_df = pd.read_csv("add_price/건고추_price_df.csv", low_memory=False)
+df_list = [garlic_df, napa_cabbage_df, radish_df, pepper_df]
+name_list = ["garlic", "napa_cabbage", "radish", "pepper"]
+
+bagging_multiple_regression(df_list, name_list)
+#bagging_polynomial_regression(df_list, name_list, degree=3)
+# ==============================================
+# 16. Evaluation - 2) XGBoost
+# ==============================================
+print('XGBoost----------------------------------------------------------------------------------------------------------------------------------------------------------------')
+garlic_df = pd.read_csv("add_price/마늘_price_df.csv", low_memory=False)
+napa_cabbage_df = pd.read_csv("add_price/배추_price_df.csv", low_memory=False)
+radish_df = pd.read_csv("add_price/무_price_df.csv", low_memory=False)
+pepper_df = pd.read_csv("add_price/건고추_price_df.csv", low_memory=False)
+df_list = [garlic_df, napa_cabbage_df, radish_df, pepper_df]
+name_list = ["garlic", "napa_cabbage", "radish", "pepper"]
+
+#XGB_multiple_regression(df_list, name_list)
+#XGB_polynomial_regression(df_list, name_list, degree=3)
