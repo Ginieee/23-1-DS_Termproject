@@ -80,7 +80,6 @@ def drop_unusable_feature(df_list, item_list):
 
     return df_list, target_df_list
 
-# https://pink371010.medium.com/pca-8b66c798bb8
 # Apply PCA to each dataframe
 def apply_PCA(df_list, target, n_components):
     for i, df in enumerate(df_list):
@@ -102,12 +101,12 @@ def apply_PCA(df_list, target, n_components):
         cumulative_variance_ratio = np.cumsum(pca.explained_variance_ratio_)
 
         # Plot the explained variance ratio
-        # plt.plot(PC_values, pca.explained_variance_ratio_, 'ro-', linewidth=2, label='Individual')
-        # plt.plot(PC_values, cumulative_variance_ratio, 'bo-', linewidth=2, label='Cumulative')
-        # plt.xlabel('Principal Component')
-        # plt.ylabel('Proportion of Variance Explained')
-        # plt.legend()
-        # plt.show()
+        plt.plot(PC_values, pca.explained_variance_ratio_, 'ro-', linewidth=2, label='Individual')
+        plt.plot(PC_values, cumulative_variance_ratio, 'bo-', linewidth=2, label='Cumulative')
+        plt.xlabel('Principal Component')
+        plt.ylabel('Proportion of Variance Explained')
+        plt.legend()
+        plt.show()
 
         # # Create a new dataframe with the transformed data
         columns = []
@@ -123,92 +122,90 @@ def apply_PCA(df_list, target, n_components):
     return df_list
 
 
-def run_multiple_linear_regression(df_list, item_list, selected_feature_list):
+def run_multiple_linear_regression(df_list, item_list):
     model_list = []
     target = '인플레이션 반영가'
-    # df_list, target_df_list, item_list = load_dataset()
-    # df_list, target_df_list = drop_unusable_feature(df_list, item_list)
-    
+
     df_list_no_pca = df_list.copy()
         
-    
+    # PCA 적용 후 model 학습
     df_list_tmp = apply_PCA(df_list.copy(), target, 5)
     
-    for i, (df, selected_feature) in enumerate(zip(df_list, selected_feature_list)):
-        tmp = df[target]
-        # tmp_df = df[selected_feature + [target]]  # 선택된 특성들과 '인플레이션 반영가' 열을 포함
+    # PCA 적용 한 후 모델 학습
+    for df, item in zip(df_list_tmp, item_list):
+        coefficients, model = multipleRegression(df.copy(), item, train_size=0.8)
+        coefficient_mapping = dict(zip(df.columns, coefficients))
 
-        # tmp = df[target]
-        tmp_df = df[selected_feature]
+        # 내림차순으로 sorting
+        sorted_mapping = dict(sorted(coefficient_mapping.items(), key=lambda x: x[1], reverse=True))
+        print("Model Coefficient(Apply PCA)---------------------------------------")
+        print(sorted_mapping)
 
-        tmp_df[target] = tmp
-        df_list_no_pca[i] = tmp_df
-    
+        print("-------------------------------------------------------------------")
 
-    # for df, item in zip(df_list_tmp, item_list):
-        
-    #     multipleRegression(df.copy(), item, train_size=0.8)
-
-    for df, item in zip(df_list_no_pca, item_list):
-        print(df.shape)
-        print(df.columns)
+    for df, item in zip(df_list, item_list):
         coefficients, model = multipleRegression(df.copy(), item, train_size=0.8)
         coefficient_mapping = dict(zip(df.columns, coefficients))
         
         # 내림차순으로 sorting
         sorted_mapping = dict(sorted(coefficient_mapping.items(), key=lambda x: x[1], reverse=True))
-        print("-------------------------------------------------------------------")
-        print("-------------------------------------------------------------------")
-        print("-------------------------------------------------------------------")
+        print("Model Coefficient(Not Apply PCA)---------------------------------------")
         print(sorted_mapping)
 
         print("-------------------------------------------------------------------")
-        print("-------------------------------------------------------------------")
-        print("-------------------------------------------------------------------")
+
         model_list.append(model)
 
     return model_list
 
 
-# def run_multiple_linear_regression_for_estimate(df_list, item_list, selected_feature_list):
+def run_multiple_linear_regression(df_list, item_list, selected_feature):
+    model_list = []
+    target = '인플레이션 반영가'
     
-#     target = '인플레이션 반영가'
-#     # df_list, target_df_list, item_list = load_dataset()
-#     # df_list, target_df_list = drop_unusable_feature(df_list, item_list)
-    
-#     df_list_no_pca = df_list.copy()
-    
-#     for i, (df, selected_feature) in enumerate(zip(df_list, selected_feature_list)):
-#         tmp = df[target]
-#         # tmp_df = df[selected_feature + [target]]  # 선택된 특성들과 '인플레이션 반영가' 열을 포함
-
-#         # tmp = df[target]
-#         tmp_df = df[selected_feature]
-
-#         tmp_df[target] = tmp
-#         df_list_no_pca[i] = tmp_df
-    
-
-#     # for df, item in zip(df_list_tmp, item_list):
+    df_list_no_pca = df_list.copy()
         
-#     #     multipleRegression(df.copy(), item, train_size=0.8)
-
-#     for df, item in zip(df_list_no_pca, item_list):
-#         print(df.shape)
-#         print(df.columns)
-#         coefficients = multipleRegression_for_estimate(df.copy(), item, train_size=0.8)
-#         coefficient_mapping = dict(zip(df.columns, coefficients))
+    # PCA 적용 후 model 학습
+    df_list_tmp = apply_PCA(df_list.copy(), target, 5)
+    
+    # SelectKBest로 선택된 특성들로 학습
+    for i, df in enumerate(df_list):
         
-#         # 내림차순으로 sorting
-#         sorted_mapping = dict(sorted(coefficient_mapping.items(), key=lambda x: x[1], reverse=True))
-#         print("-------------------------------------------------------------------")
-#         print("-------------------------------------------------------------------")
-#         print("-------------------------------------------------------------------")
-#         print(sorted_mapping)
+        tmp = df[target]
+        tmp_df = df[selected_feature + [target]]  # 선택된 특성들과 '인플레이션 반영가' 열을 포함
 
-#         print("-------------------------------------------------------------------")
-#         print("-------------------------------------------------------------------")
-#         print("-------------------------------------------------------------------")
+        tmp = df[target]
+        tmp_df = df
+
+        tmp_df[target] = tmp
+        df_list_no_pca[i] = tmp_df
+    
+    # PCA 적용 한 후 모델 학습
+    for df, item in zip(df_list_tmp, item_list):
+        coefficients, model = multipleRegression(df.copy(), item, train_size=0.8)
+        coefficient_mapping = dict(zip(df.columns, coefficients))
+
+        # 내림차순으로 sorting
+        sorted_mapping = dict(sorted(coefficient_mapping.items(), key=lambda x: x[1], reverse=True))
+        print("Model Coefficient(Apply PCA)---------------------------------------")
+        print(sorted_mapping)
+
+        print("-------------------------------------------------------------------")
+
+    for df, item in zip(df_list, item_list):
+        coefficients, model = multipleRegression(df.copy(), item, train_size=0.8)
+        coefficient_mapping = dict(zip(df.columns, coefficients))
+        
+        # 내림차순으로 sorting
+        sorted_mapping = dict(sorted(coefficient_mapping.items(), key=lambda x: x[1], reverse=True))
+        print("Model Coefficient(Not Apply PCA)---------------------------------------")
+        print(sorted_mapping)
+
+        print("-------------------------------------------------------------------")
+
+        model_list.append(model)
+
+    return model_list
 
 def run_linear_regression(df_list, item_list):
     df_list, target_df_list = drop_unusable_feature(df_list, item_list)

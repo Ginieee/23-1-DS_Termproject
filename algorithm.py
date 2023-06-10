@@ -327,19 +327,20 @@ def find_best_feature_combination(df_list, item_list, feature_list, train_size):
 
     return best_combination
 
-# multiple linear regression을 돌리는 함수
-def multipleRegression(df, item, train_size):
+# # multiple linear regression을 돌리는 함수
+# def multipleRegression(df, item, train_size):
     
-    y = df['인플레이션 반영가']
-    x = df.drop('인플레이션 반영가', axis=1)
+#     y = df['인플레이션 반영가']
+#     x = df.drop('인플레이션 반영가', axis=1)
     
 
-def run_multipleRegression(df_list, item_list, combination_list, train_size):
-    for df, item, feature in zip(df_list, item_list, combination_list):
-        x = df[feature]
-        y = df['인플레이션 반영가']
-        
-        x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=train_size, test_size=(1-train_size), shuffle=True, random_state=1)
+def multipleRegression(df, item, train_size):
+    # for df, item in zip(df_list, item_list):
+        # print(df)
+    x = df.drop('인플레이션 반영가', axis=1)
+    y = df['인플레이션 반영가']
+    
+    x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=train_size, test_size=(1-train_size), shuffle=True, random_state=1)
 
     # print("x: ", x)
     mlr = LinearRegression()
