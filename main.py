@@ -8,10 +8,9 @@ from removeDirtyData import remove_save, compare_dirty_data
 from removeOutlier import removeOutliers, compare_outliers
 from correlation import draw_corr_heatmap, setting2
 from exploration import data_exploration, setting_exploration
-from inflation import reflact_inflation
 from algorithm import find_best_feature_combination
-# from dataClassification import final_df_classification, knn_classification
-# from kmeans_algorithm import perform_pca, plot_cumulative_variance_ratio, multiple_kmeans_algorithm, calculate_cumulative_variance_ratio, do_multiple_kmeans
+from dataClassification import final_df_classification, knn_classification
+from kmeans_algorithm import perform_pca, plot_cumulative_variance_ratio, multiple_kmeans_algorithm, calculate_cumulative_variance_ratio, do_multiple_kmeans
 from add_previous_value import add_previous_feature, add_previous_price_feature, add_previous_save
 from run_linear_regression import run_multiple_linear_regression,run_linear_regression
 from run_polynomial_regression import run_polynomial_regression
@@ -30,17 +29,23 @@ from run_linear_regression import run_multiple_linear_regression
 from run_polynomial_regression import run_polynomial_regression
 import warnings
 from evaluation import bagging_multiple_regression, bagging_polynomial_regression, XGB_multiple_regression, XGB_polynomial_regression
+from sklearn.feature_selection import f_regression, SelectKBest
 
 warnings.filterwarnings('ignore')
 
 
 plt.rcParams['font.family'] = 'Malgun Gothic'
+
+# # ------------------------------------------------------------------
+# # [1] 전처리 단계
+# # ------------------------------------------------------------------
+
 # # ==============================================
 # # 1. Load Datasets
 # # ==============================================
 
 # # ----------------------------------------------
-# # 이지해 데이터셋(소매가격 + 기상관측)
+# # 소매가격 + 기상관측 데이터셋
 # # ----------------------------------------------
 # # 배추, 무, 마늘, 건고추
 # #
@@ -65,7 +70,7 @@ plt.rcParams['font.family'] = 'Malgun Gothic'
 # pepper_plus_assos_df = pd.read_csv("original_dataset/weather/pepper_plus_assos_df.csv", low_memory=False)
 
 # # ----------------------------------------------
-# # 강어진 데이터셋(소매가격)
+# # 가격 데이터셋
 # # ----------------------------------------------
 # napa_cabbage_plus_price_df = pd.read_csv("original_dataset/price/df_cabbage.csv", low_memory=False, encoding='cp949')
 # radish_plus_price_df = pd.read_csv("original_dataset/price/df_radish.csv", low_memory=False, encoding='cp949')
@@ -73,7 +78,7 @@ plt.rcParams['font.family'] = 'Malgun Gothic'
 # pepper_plus_price_df = pd.read_csv("original_dataset/price/df_pepper.csv", low_memory=False, encoding='cp949')
 
 # # ----------------------------------------------
-# # 장원준 데이터셋(소매가격 + 수입,수출)
+# # 소매가격 + 수입,수출 데이터셋
 # # ----------------------------------------------
 # napa_cabbage_plus_income_export_df = pd.read_excel("original_dataset/income/income_export_cabbage.xlsx")
 # radish_plus_income_export_df = pd.read_excel("original_dataset/income/income_export_radish.xlsx")
@@ -133,7 +138,7 @@ plt.rcParams['font.family'] = 'Malgun Gothic'
 
 # df_list = [garlic_df, napa_cabbage_df, radish_df, pepper_df]
 # df_name_list = ["garlic_df", "napa_cabbage_df", "radish_df", "pepper_df"]
-item_list = ['마늘', '배추', '무', '건고추']
+# item_list = ['마늘', '배추', '무', '건고추']
 # file_path = "remove_dirtyData/"
 
 # after_remove_dirty_data_list = remove_save(df_list.copy(), df_name_list, item_list, file_path)
@@ -153,11 +158,12 @@ item_list = ['마늘', '배추', '무', '건고추']
 # print('Reflect inflation on target -------------------------------------------------------------------------------------------------------------')
 # reflect_inflation(df_list, inflation_df)
 
-# ==============================================
-# 7. add previous feature
-# ==============================================
+# # ==============================================
+# # 7. add previous feature
+# # ==============================================
 # print('Add Previous Feature ---------------------------------------------------------------------------------------------------------------------------------------------------------')
 
+# # 1) 직전 n달 기상, 수출, 수입 정보 저장
 # garlic_df = pd.read_csv("reflect_inflation/inflation_garlic_df.csv", low_memory=False)
 # napa_cabbage_df = pd.read_csv("reflect_inflation/inflation_cabbage_df.csv", low_memory=False)
 # radish_df = pd.read_csv("reflect_inflation/inflation_radish_df.csv", low_memory=False)
@@ -169,79 +175,78 @@ item_list = ['마늘', '배추', '무', '건고추']
 
 # previous_df_list = add_previous_feature(df_list, item_list)
 
+# # 2) 직전 n달 가격 정보 저장
 # garlic_df = pd.read_csv("add_previous_feature/마늘_df.csv", low_memory=False)
 # napa_cabbage_df = pd.read_csv("add_previous_feature/배추_df.csv", low_memory=False)
 # radish_df = pd.read_csv("add_previous_feature/무_df.csv", low_memory=False)
 # pepper_df = pd.read_csv("add_previous_feature/건고추_df.csv", low_memory=False)
 
 # previous_df_list = [garlic_df, napa_cabbage_df, radish_df, pepper_df]
-# # add_previous_save(previous_df_list, item_list, file_path, "_df")
 
 # previous_df_list = add_previous_price_feature(previous_df_list)
 
 # add_previous_save(previous_df_list, item_list, file_path, "_price_df")
+
 # df_list = previous_df_list
 
 # ==============================================
-# 7. 올해 가격 예측을 위한 data는 따로 빼 놓기
-# outlier 제거 x
+# 8. outlier로 제거되지 않기 위해, 올해 가격 예측을 위한 data는 따로 빼 놓기
 # ==============================================
-# print('Data split -----------------------------------------------------------------------------------------------------------------------------------------------------------')
-# garlic_df = pd.read_csv("add_previous_feature/마늘_price_df.csv", low_memory=False)
-# napa_cabbage_df = pd.read_csv("add_previous_feature/배추_price_df.csv", low_memory=False)
-# radish_df = pd.read_csv("add_previous_feature/무_price_df.csv", low_memory=False)
-# pepper_df = pd.read_csv("add_previous_feature/건고추_price_df.csv", low_memory=False)
+print('Data split -----------------------------------------------------------------------------------------------------------------------------------------------------------')
+garlic_df = pd.read_csv("add_previous_feature/마늘_price_df.csv", low_memory=False)
+napa_cabbage_df = pd.read_csv("add_previous_feature/배추_price_df.csv", low_memory=False)
+radish_df = pd.read_csv("add_previous_feature/무_price_df.csv", low_memory=False)
+pepper_df = pd.read_csv("add_previous_feature/건고추_price_df.csv", low_memory=False)
 
-# df_list = [garlic_df, napa_cabbage_df, radish_df, pepper_df]
-# name_list = ["Garlic", "Napa Cabbage", "Radish", "Pepper"]
-# df_for_predict_list = []
+df_list = [garlic_df, napa_cabbage_df, radish_df, pepper_df]
+name_list = ["Garlic", "Napa Cabbage", "Radish", "Pepper"]
+df_for_predict_list = []
 
-# for i, (df, item) in enumerate(zip(df_list, name_list)):
-#     if item == "Pepper":
-#         df_for_predict = df[df['연도'] == 2012]
-#         df_for_predict = df_for_predict[df_for_predict['월'] == 12]
+for i, (df, item) in enumerate(zip(df_list, name_list)):
+    if item == "Pepper":
+        df_for_predict = df[df['연도'] == 2012]
+        df_for_predict = df_for_predict[df_for_predict['월'] == 12]
         
-#         df_for_predict_list.append(df_for_predict)
+        df_for_predict_list.append(df_for_predict)
         
-#         df = df[~((df['연도'] == 2012) & (df['월'] == 12))] 
-#         df_list[i] = df
-#     else: 
-#         df_for_predict = df[df['연도'] == 2023]
-#         df_for_predict = df_for_predict[df_for_predict['월'] == 4]
+        df = df[~((df['연도'] == 2012) & (df['월'] == 12))] 
+        df_list[i] = df
+    else: 
+        df_for_predict = df[df['연도'] == 2023]
+        df_for_predict = df_for_predict[df_for_predict['월'] == 4]
         
-#         df_for_predict_list.append(df_for_predict)
+        df_for_predict_list.append(df_for_predict)
         
-#         df = df[~((df['연도'] == 2023) & (df['월'] == 4))]
+        df = df[~((df['연도'] == 2023) & (df['월'] == 4))]
 
-#         df_list[i] = df
-
-# ==============================================
-# 7. Remove Outliers
-# ==============================================
-# print('Remove Outliers -----------------------------------------------------------------------------------------------------------------------------------------------------------')
-
-
-# df_name_list = ["garlic_df", "napa_cabbage_df", "radish_df", "pepper_df"]
-# columns = ["평균기온(°C)","최저기온(°C)","최고기온(°C)","최소 상대습도(%)","평균 상대습도(%)","최대 풍속(m/s)",
-#                "평균 풍속(m/s)","합계 일사량(MJ/m2)","합계 일조시간(hr)","평균 지면온도(°C)","수출(kg)","수출(달러)","수입(kg)","수입(달러)"]
-# file_path = "remove_outlier/"
-
-# data_list_after = removeOutliers(df_list.copy(), df_name_list, columns, file_path)
-
-# df_list = data_list_after
-
-# for i, (df, df_for_predict) in enumerate(zip(df_list, df_for_predict_list)):
-#     combineDf = pd.concat([df, df_for_predict], )
-#     df_list[i] = combineDf
-#     combineDf.to_csv("remove_outlier/"+df_name_list[i]+'.csv', encoding="utf-8")
-    # df.to_csv(file_path + file_name + ".csv", encoding="utf-8")
-
-# compare_outliers(df_list.copy(), data_list_after, ['수입(kg)', '최대 풍속(m/s)', '평균 상대습도(%)'])
+        df_list[i] = df
 
 # ==============================================
-# 8. Correlation amongst features
+# 9. Remove Outliers
 # ==============================================
-# print('Correlation among features ------------------------------------------------------------------------------------------------------------------------------------------------')
+print('Remove Outliers -----------------------------------------------------------------------------------------------------------------------------------------------------------')
+
+
+df_name_list = ["garlic_df", "napa_cabbage_df", "radish_df", "pepper_df"]
+columns = ["평균기온(°C)","최저기온(°C)","최고기온(°C)","최소 상대습도(%)","평균 상대습도(%)","최대 풍속(m/s)",
+               "평균 풍속(m/s)","합계 일사량(MJ/m2)","합계 일조시간(hr)","평균 지면온도(°C)","수출(kg)","수출(달러)","수입(kg)","수입(달러)"]
+file_path = "remove_outlier/"
+
+data_list_after = removeOutliers(df_list.copy(), df_name_list, columns, file_path)
+
+df_list = data_list_after
+
+for i, (df, df_for_predict) in enumerate(zip(df_list, df_for_predict_list)):
+    combineDf = pd.concat([df, df_for_predict], )
+    df_list[i] = combineDf
+    combineDf.to_csv("remove_outlier/"+df_name_list[i]+'.csv', encoding="utf-8")
+
+compare_outliers(df_list.copy(), data_list_after, ['수입(kg)', '최대 풍속(m/s)', '평균 상대습도(%)'])
+
+# ==============================================
+# 10. Correlation amongst features
+# ==============================================
+print('Correlation among features ------------------------------------------------------------------------------------------------------------------------------------------------')
 garlic_df = pd.read_csv("remove_outlier/garlic_df.csv", low_memory=False)
 napa_cabbage_df = pd.read_csv("remove_outlier/napa_cabbage_df.csv", low_memory=False)
 radish_df = pd.read_csv("remove_outlier/radish_df.csv", low_memory=False)
@@ -250,16 +255,14 @@ pepper_df = pd.read_csv("remove_outlier/pepper_df.csv", low_memory=False)
 df_list = [garlic_df, napa_cabbage_df, radish_df, pepper_df]
 name_list = ["Garlic", "Napa Cabbage", "Radish", "Pepper"]
 
-# df_list = drop_non_numeric_Features(df_list)
-# # setting2(df_list)
-# # draw_corr_heatmap(df_list, name_list, "소매일일가격")
-# # plt.show()
+df_list = drop_non_numeric_Features(df_list)
+setting2(df_list)
+# draw_corr_heatmap(df_list, name_list, "소매일일가격")
+# plt.show()
 
 # ==============================================
-# 7. 올해 가격 예측을 위한 data는 따로 빼 놓기
-# 학습에 포함 x
+# 11. 학습에 포함하지 않기 위해, 올해 가격 예측을 위한 data는 따로 빼 놓기
 # ==============================================
-
 
 # 올해 가격 예측을 위한 data 따로 빼 놓기
 df_for_predict_list = []
@@ -287,26 +290,27 @@ for i, (df, item) in enumerate(zip(df_list, name_list)):
     print(df.columns)
     
 
-# # ===============================================
-# # 11. Drop unusable features
-# # ===============================================
+# ===============================================
+# 12. Drop unusable features
+# ===============================================
 for i, (df, df_for_predict) in enumerate(zip(df_list, df_for_predict_list)):
     
     df.replace(-1.0, np.nan,inplace=True)
 
     df.fillna(method='ffill', inplace=True)
+    
 
     df = df[df['연도'] != 1999]
     df.drop('소매일일가격', axis=1, inplace=True)
-    df.drop('일시', axis=1, inplace=True)
+    # df.drop('일시', axis=1, inplace=True)
     df.drop('연도', axis=1, inplace=True)
-    df.drop('품목', axis=1, inplace=True)
+    # df.drop('품목', axis=1, inplace=True)
     df.drop('소비자물가총지수', axis=1, inplace=True)
-    df.drop('Unnamed: 0.1', axis=1, inplace=True)
-    df.drop('Unnamed: 0.1.1', axis=1, inplace=True)
-    df.drop('Unnamed: 0.1.1.1', axis=1, inplace=True)
-    df.drop('Unnamed: 0.1.1.1.1', axis=1, inplace=True)
-    df.drop('Unnamed: 0', axis=1, inplace=True)
+    df.drop('Unnamed: 0.3', axis=1, inplace=True)
+    df.drop('Unnamed: 0.2', axis=1, inplace=True)
+    # df.drop('Unnamed: 0.1.1.1', axis=1, inplace=True)
+    # df.drop('Unnamed: 0.1.1.1.1', axis=1, inplace=True)
+    # df.drop('Unnamed: 0', axis=1, inplace=True)
     drop_list = ['평균기온(°C)','최저기온(°C)','최고기온(°C)','최소 상대습도(%)','평균 상대습도(%)','최대 풍속(m/s)','평균 풍속(m/s)','합계 일사량(MJ/m2)','합계 일조시간(hr)','평균 지면온도(°C)','수출(kg)','수출(달러)','수입(kg)','수입(달러)']
     df.drop(drop_list, axis=1, inplace=True)
     df_list[i] = df
@@ -318,25 +322,23 @@ for i, (df, df_for_predict) in enumerate(zip(df_list, df_for_predict_list)):
 
     df_for_predict = df_for_predict[df_for_predict['연도'] != 1999]
     df_for_predict.drop('소매일일가격', axis=1, inplace=True)
-    df_for_predict.drop('일시', axis=1, inplace=True)
+    # df_for_predict.drop('일시', axis=1, inplace=True)
     df_for_predict.drop('연도', axis=1, inplace=True)
-    df_for_predict.drop('품목', axis=1, inplace=True)
+    # df_for_predict.drop('품목', axis=1, inplace=True)
     df_for_predict.drop('소비자물가총지수', axis=1, inplace=True)
-    df_for_predict.drop('Unnamed: 0.1', axis=1, inplace=True)
-    df_for_predict.drop('Unnamed: 0.1.1', axis=1, inplace=True)
-    df_for_predict.drop('Unnamed: 0.1.1.1', axis=1, inplace=True)
-    df_for_predict.drop('Unnamed: 0.1.1.1.1', axis=1, inplace=True)
-    df_for_predict.drop('Unnamed: 0', axis=1, inplace=True)
+    df_for_predict.drop('Unnamed: 0.3', axis=1, inplace=True)
+    df_for_predict.drop('Unnamed: 0.2', axis=1, inplace=True)
+    # df_for_predict.drop('Unnamed: 0.1.1.1', axis=1, inplace=True)
+    # df_for_predict.drop('Unnamed: 0.1.1.1.1', axis=1, inplace=True)
+    # df_for_predict.drop('Unnamed: 0', axis=1, inplace=True)
     drop_list = ['평균기온(°C)','최저기온(°C)','최고기온(°C)','최소 상대습도(%)','평균 상대습도(%)','최대 풍속(m/s)','평균 풍속(m/s)','합계 일사량(MJ/m2)','합계 일조시간(hr)','평균 지면온도(°C)','수출(kg)','수출(달러)','수입(kg)','수입(달러)']
     df_for_predict.drop(drop_list, axis=1, inplace=True)
     df_for_predict_list[i] = df_for_predict
-    # print(df_for_predict.shape)
-    # print(df_for_predict.columns)
 
 # data_exploration(df_list, name_list)
 
 # ===========================================
-# 12. Scaling
+# 13. Scaling
 # ===========================================
 target = "인플레이션 반영가"
 selected_scaler = StandardScaler
@@ -346,7 +348,7 @@ selected_scaler = StandardScaler
 for i, (df, df_for_predict) in enumerate(zip(df_list, df_for_predict_list)):
     scaler = selected_scaler()
     df_x = df.drop(target, axis=1)
-    df_y = df[target]\
+    df_y = df[target]
     
     df_x_scaled = scaler.fit_transform(df_x.iloc[:, :])
 
@@ -365,70 +367,68 @@ for i, (df, df_for_predict) in enumerate(zip(df_list, df_for_predict_list)):
     df_for_predict_list[i] = df_for_predict_x_scaled
 
 # ==============================================
-# 13. Select Kbest
+# 14. Select Kbest
 # ==============================================
 
-# # target(Price)와 가장 correlated 된 features 를 k개 고르기.
+# target(Price)와 가장 correlated 된 features 를 k개 고르기.
 
-# from sklearn.feature_selection import f_regression, SelectKBest
+selected_feature_list = []
 
-# selected_feature_list = []
+for df in df_list:
+    x = df.drop('인플레이션 반영가', axis=1)
+    y = df['인플레이션 반영가']
+    # selctor 정의하기.
+    selector = SelectKBest(score_func=f_regression, k=40)
+    # 학습데이터에 fit_transform 
+    X_selected = selector.fit_transform(x,y)
+    # 테스트 데이터는 transform
+    # X_test_selected = selector.transform(X_test)
+    print(X_selected.shape)
 
-# for df in df_list:
-#     x = df.drop('인플레이션 반영가', axis=1)
-#     y = df['인플레이션 반영가']
-#     ## selctor 정의하기.
-#     selector = SelectKBest(score_func=f_regression, k=40)
-#     ## 학습데이터에 fit_transform 
-#     X_selected = selector.fit_transform(x,y)
-#     ## 테스트 데이터는 transform
-#     # X_test_selected = selector.transform(X_test)
-#     print(X_selected.shape)
+    all_names = x.columns
+    # selector.get_support()
+    selected_mask = selector.get_support()
+    # 선택된 특성(변수)들
+    selected_names = all_names[selected_mask]
+    # 선택되지 않은 특성(변수)들
+    unselected_names = all_names[~selected_mask]
+    print('Selected names: ', selected_names)
+    print('Unselected names: ', unselected_names)
+    print("-----------------------------------------------------\n")
+    selected_feature_list.append(selected_names)
 
-#     all_names = x.columns
-#     ## selector.get_support()
-#     selected_mask = selector.get_support()
-#     ## 선택된 특성(변수)들
-#     selected_names = all_names[selected_mask]
-#     ## 선택되지 않은 특성(변수)들
-#     unselected_names = all_names[~selected_mask]
-#     print('Selected names: ', selected_names)
-#     print('Unselected names: ', unselected_names)
-#     print("-----------------------------------------------------\n")
-#     selected_feature_list.append(selected_names)
+# ------------------------------------------------------------------
+# [2] Fit the model
+# ------------------------------------------------------------------
 
+# ==============================================
+# 15. KMeans Clustering
+# ==============================================
+print('Multiple KMeans--------------------------------------------------------------------------------------------------------------------------------------------')
+do_multiple_kmeans(df_list.copy(), name_list)
 
+# ==============================================
+# 16. Regression model - 1) multiple linear regression
+# ==============================================
+print('Multiple Linear Regression--------------------------------------------------------------------------------------------------------------------------------------------')
+model_list = run_multiple_linear_regression(df_list.copy(), name_list)
 
-# # ==============================================
-# # 14. KMeans Clustering
-# # ==============================================
-# # print('Multiple KMeans--------------------------------------------------------------------------------------------------------------------------------------------')
-# # do_multiple_kmeans(df_list, name_list)
+# ==============================================
+# 17. Regression model - 2) polynomial regression
+# ==============================================
+print('Polynomial Regression--------------------------------------------------------------------------------------------------------------------------------------------')
+run_polynomial_regression(df_list.copy(), name_list, "인플레이션 반영가", degree=2)
+# run_linear_regression(df_list.copy(), name_list)
 
-# # ==============================================
-# # 15. Regression model - 1) multiple linear regression
-# # ==============================================
-# print('Multiple Linear Regression--------------------------------------------------------------------------------------------------------------------------------------------')
-model_list = run_multiple_linear_regression(df_list, name_list)
+# ------------------------------------------------------------------
+# [3] Evaluate the model
+# ------------------------------------------------------------------
 
-# # ==============================================
-# # 16. Regression model - 2) multiple linear regression
-# # ==============================================
-# # print('Polynomial Regression--------------------------------------------------------------------------------------------------------------------------------------------')
-# # run_polynomial_regression(df_list, name_list, "인플레이션 반영가", degree=2)
-# # run_linear_regression(df_list, name_list)
+# ===================================================
+# 18. 예측) multiple linear regression 모델 사용해보기
+# ===================================================
 
-# # ===================================================
-# # 17. 예측) multiple linear regression 모델 사용해보기
-# # ===================================================
-
-# print('Previous price--------------------------------------------------------------------------------------------------------------------------------------------')
-# garlic_df = pd.read_csv("add_price/마늘_price_df.csv", low_memory=False)
-# napa_cabbage_df = pd.read_csv("add_price/배추_price_df.csv", low_memory=False)
-# radish_df = pd.read_csv("add_price/무_price_df.csv", low_memory=False)
-# pepper_df = pd.read_csv("add_price/건고추_price_df.csv", low_memory=False)
-# df_list = [garlic_df, napa_cabbage_df, radish_df, pepper_df]
-# name_list = ["garlic", "napa_cabbage", "radish", "pepper"]
+print('Predict the value using multiple linear regression --------------------------------------------------------------------------------------------------------------------------------------------')
 
 for df, model in zip(df_for_predict_list, model_list):
     y = df['인플레이션 반영가']
@@ -440,20 +440,17 @@ for df, model in zip(df_for_predict_list, model_list):
         print(f"{pred:.2f}\t\t{actual:.2f}")
 
 # ==============================================
-# 15. Evaluation - 1) Bagging
+# 19. Evaluation - 1) Bagging
 # ==============================================
 print('Bagging----------------------------------------------------------------------------------------------------------------------------------------------------------------')
-garlic_df = pd.read_csv("add_price/마늘_price_df.csv", low_memory=False)
-napa_cabbage_df = pd.read_csv("add_price/배추_price_df.csv", low_memory=False)
-radish_df = pd.read_csv("add_price/무_price_df.csv", low_memory=False)
-pepper_df = pd.read_csv("add_price/건고추_price_df.csv", low_memory=False)
-df_list = [garlic_df, napa_cabbage_df, radish_df, pepper_df]
+
 name_list = ["garlic", "napa_cabbage", "radish", "pepper"]
 
-bagging_multiple_regression(df_list, name_list)
-#bagging_polynomial_regression(df_list, name_list, degree=3)
+# bagging_multiple_regression(df_list.copy(), name_list)
+# bagging_polynomial_regression(df_list.copy(), name_list, degree=2)
+
 # ==============================================
-# 16. Evaluation - 2) XGBoost
+# 20. Evaluation - 2) XGBoost
 # ==============================================
 print('XGBoost----------------------------------------------------------------------------------------------------------------------------------------------------------------')
 garlic_df = pd.read_csv("add_price/마늘_price_df.csv", low_memory=False)
@@ -463,5 +460,5 @@ pepper_df = pd.read_csv("add_price/건고추_price_df.csv", low_memory=False)
 df_list = [garlic_df, napa_cabbage_df, radish_df, pepper_df]
 name_list = ["garlic", "napa_cabbage", "radish", "pepper"]
 
-#XGB_multiple_regression(df_list, name_list)
-#XGB_polynomial_regression(df_list, name_list, degree=3)
+# XGB_multiple_regression(df_list.copy(), name_list)
+# XGB_polynomial_regression(df_list.copy(), name_list, degree=3)

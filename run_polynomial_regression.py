@@ -88,18 +88,8 @@ def drop_unusable_feature(df_list, item_list):
 
         drop_feature_start_with(df, start_with + "1달", except_list)
 
-        drop_list = ["Unnamed: 0","일시","품목","소매일일가격","평균기온(°C)","최저기온(°C)","최고기온(°C)","최소 상대습도(%)",
-                    "평균 상대습도(%)","최대 풍속(m/s)","평균 풍속(m/s)","합계 일사량(MJ/m2)","합계 일조시간(hr)","평균 지면온도(°C)", 
-                    "소비자물가총지수"]
-        
-        df.drop(drop_list, axis=1, inplace=True)
-
-        df = df[df['연도']!=1999]
-
-        df.drop('연도', axis=1, inplace=True)
-
         target_df = df['인플레이션 반영가']
-        df.drop('인플레이션 반영가', axis=1, inplace=True)
+        df.drop('인플레이션 반영가', axis=1)
 
         df_list[i] = df
         target_df_list[i] = target_df
@@ -107,11 +97,8 @@ def drop_unusable_feature(df_list, item_list):
     return df_list, target_df_list
 
 def drop_feature_start_with(df, start_with, except_list):
-    
-    for index, value in df.iteritems(): 
-
-        if start_with in index and index not in except_list:
-            df.drop(index, axis=1, inplace = True)
+    columns_to_drop = [column for column in df.columns if column.startswith(start_with) and column not in except_list]
+    df.drop(columns_to_drop, axis=1, inplace=True)
 
     return df
 
@@ -119,6 +106,7 @@ def run_polynomial_regression(df_list, item_list, target, degree):
     df_list, target_df_list = drop_unusable_feature(df_list, item_list)
 
     for df, target in zip(df_list, target_df_list):
+        df = df.drop('인플레이션 반영가', axis=1)
         idx_80_percent = int(len(df) * 0.8)
         poly_features, model = polynomial_regression(df[:idx_80_percent], target[:idx_80_percent], degree)
         test_polynomial_regression(poly_features, model, df[idx_80_percent:], target[idx_80_percent:])

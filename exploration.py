@@ -5,11 +5,14 @@ import seaborn as sns
 
 def setting_exploration(data_list):
     for data in data_list:
-        data.drop("Unnamed: 0", axis=1, inplace=True)
-        data.drop("Unnamed: 0.1", axis=1, inplace=True)
+        try:
+            data.drop("Unnamed: 0", axis=1, inplace=True)
+            data.drop("Unnamed: 0.1", axis=1, inplace=True)
+        except KeyError:
+            pass
         pd.set_option('display.expand_frame_repr', False)
 
-def data_exploration(data_list, data_name_list, item):
+def data_exploration(data_list, data_name_list):
     for data, name in zip(data_list, data_name_list):
         # print(f"================================ {name} ================================")
         # #Print head of data

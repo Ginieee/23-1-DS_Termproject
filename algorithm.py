@@ -5,11 +5,292 @@ from sklearn.metrics import mean_squared_error
 from itertools import combinations
 from datetime import datetime, timedelta
 import pandas as pd
-from sklearn.preprocessing import PolynomialFeatures
-import numpy as np
-from sklearn.metrics import r2_score
+
+# =====================================
+# calculate_date_range(input_date, n)
+# =====================================
+# This function calculates the date range based on the input date and the specified number of months (n)
+# =====================================
+# The function assumes that the input_date parameter is a datetime object. 
+# If it is a string, you will need to uncomment the line that converts the input date to a datetime object using the datetime.strptime() function.
+# -------------------------------------
+
+def calculate_date_range(input_date, n):
+    date_format = "%Y-%m-%d"  # Date format
+    # input_date = datetime.strptime(date, date_format)  # Convert the input date to a datetime object
+
+    if n == 1:
+        # Calculate the range for the previous 30 days
+        start_date_30 = (input_date - timedelta(days=30)).strftime(date_format)
+        end_date_30 = (input_date - timedelta(days=1)).strftime(date_format)
+        range_30 = [start_date_30, end_date_30]
+        return range_30
+
+    elif n == 2:
+        # Calculate the range from 31 to 60 days ago
+        start_date_31_60 = (input_date - timedelta(days=60)).strftime(date_format)
+        end_date_31_60 = (input_date - timedelta(days=31)).strftime(date_format)
+        range_31_60 = [start_date_31_60, end_date_31_60]
+        return range_31_60
+
+    elif n == 3:
+        # Calculate the range from 61 to 90 days ago
+        start_date_61_90 = (input_date - timedelta(days=90)).strftime(date_format)
+        end_date_61_90 = (input_date - timedelta(days=61)).strftime(date_format)
+        range_61_90 = [start_date_61_90, end_date_61_90]
+        return range_61_90
+    
+    elif n == 4:
+        # Calculate the range from 91 to 120 days ago
+        start_date_91_120 = (input_date - timedelta(days=120)).strftime(date_format)
+        end_date_91_120 = (input_date - timedelta(days=91)).strftime(date_format)
+        range_91_120 = [start_date_91_120, end_date_91_120]
+        return range_91_120
+    
+    elif n == 5:
+         # Calculate the range from 121 to 150 days ago
+        start_date_121_150 = (input_date - timedelta(days=150)).strftime(date_format)
+        end_date_121_150 = (input_date - timedelta(days=121)).strftime(date_format)
+        range_121_150 = [start_date_121_150, end_date_121_150]
+        return range_121_150
+
+    elif n == 6:
+         # Calculate the range from 151 to 180 days ago
+        start_date_151_180 = (input_date - timedelta(days=180)).strftime(date_format)
+        end_date_151_180 = (input_date - timedelta(days=151)).strftime(date_format)
+        range_151_180 = [start_date_151_180, end_date_151_180]
+        return range_151_180
+
+    return False
+
+
+# =========================================
+# add_previous_feature(df_list, name_list)
+# =========================================
+# It adds several previous features to each dataframe based on a specified number of previous months.
+# The modified dataframes are saved as CSV files with the corresponding names.
+# =========================================
+def add_previous_feature(df_list, name_list):
+    date_format = "%Y-%m-%d"  # Date format
+
+    for df, name in zip(df_list, name_list):
+        if name == '마늘':
+            continue
+
+        for idx in df.index:
+            df.loc[idx, '일시'] = datetime.strptime(df.loc[idx, '일시'], date_format)
+
+        for n in range(2, 7):
+            print(str(n) + "----------------")
+
+            # Initialize new columns
+            df['직전 '+str(n)+'달 수출(달러)'] = -1  
+            df['직전 '+str(n)+'달 수입(달러)'] = -1
+            df['직전 '+str(n)+'달 평균기온(°C)'] = -1  
+            df['직전 '+str(n)+'달 평균 상대습도(%)'] = -1
+            df['직전 '+str(n)+'달 합계 일사량(MJ/m2)'] = -1  
+            df['직전 '+str(n)+'달 평균 풍속(m/s)'] = -1
+            df['직전 '+str(n)+'달 최대 풍속(m/s)'] = -1  
+            df['직전 '+str(n)+'달 최고기온(°C)'] = -1
+            df['직전 '+str(n)+'달 최저기온(°C)'] = -1  
+            df['직전 '+str(n)+'달 평균 지면온도(°C)'] = -1
+            
+            
+            # 1) Calculate the total exports (in dollars) for the previous n months.
+            for idx in df.index:
+                if df.loc[idx, '연도'] == 1999:
+                    continue
+                
+                range_date = calculate_date_range(df.loc[idx, '일시'], n)
+
+                start_date, end_date = datetime.strptime(range_date[0], date_format), datetime.strptime(range_date[1], date_format)
+                
+                in_range_df = df[(df['일시'] >= start_date) & (df['일시'] <= end_date)]
+                
+                tmp_list = []
+                
+                for item in in_range_df['수출(달러)'].unique():
+                    tmp_df = in_range_df[in_range_df['수출(달러)'] == item] 
+                    tmp_list.append(item*(len(tmp_df)/30))
+
+                df.loc[idx, '직전 '+str(n)+'달 수출(달러)'] = sum(tmp_list)
+
+            # 2) Calculate the total imports (in dollars) for the previous n month.     
+            for idx in df.index:
+                if df.loc[idx, '연도'] == 1999:
+                    continue
+                
+                range_date = calculate_date_range(df.loc[idx, '일시'], n)
+
+                start_date, end_date = datetime.strptime(range_date[0], date_format), datetime.strptime(range_date[1], date_format)
+                
+                in_range_df = df[(df['일시'] >= start_date) & (df['일시'] <= end_date)]
+                
+                tmp_list = []
+                
+                for item in in_range_df['수입(달러)'].unique():
+                    tmp_df = in_range_df[in_range_df['수입(달러)'] == item] 
+                    tmp_list.append(item*(len(tmp_df)/30))
+
+                df.loc[idx, '직전 '+str(n)+'달 수입(달러)'] = sum(tmp_list)
+
+            # 3) Calculate the average temperature for the previous n month      
+            for idx in df.index:
+                if df.loc[idx, '연도'] == 1999:
+                    continue
+                
+                range_date = calculate_date_range(df.loc[idx, '일시'], n)
+
+                start_date, end_date = datetime.strptime(range_date[0], date_format), datetime.strptime(range_date[1], date_format)
+                
+                in_range_df = df[(df['일시'] >= start_date) & (df['일시'] <= end_date)]
+                
+                tmp_list = []
+                
+                for tmp in in_range_df['평균기온(°C)']:
+                    tmp_list.append(tmp)
+
+                if tmp_list != []:
+                    df.loc[idx, '직전 '+str(n)+'달 평균기온(°C)'] = sum(tmp_list)/len(tmp_list)
+                
+
+            # 4) Calculate the average relative humidity for the previous n months. 
+            for idx in df.index:
+                if df.loc[idx, '연도'] == 1999:
+                    continue
+                
+                range_date = calculate_date_range(df.loc[idx, '일시'], n)
+
+                start_date, end_date = datetime.strptime(range_date[0], date_format), datetime.strptime(range_date[1], date_format)
+                
+                in_range_df = df[(df['일시'] >= start_date) & (df['일시'] <= end_date)]
+                
+                tmp_list = []
+                
+                for tmp in in_range_df['평균 상대습도(%)']:
+                    tmp_list.append(tmp)
+
+                if tmp_list != []:
+                    df.loc[idx, '직전 '+str(n)+'달 평균 상대습도(%)'] = sum(tmp_list)/len(tmp_list)
+
+            # 5) Calculate the total solar radiation for the previous n months.        
+            for idx in df.index:
+                if df.loc[idx, '연도'] == 1999:
+                    continue
+                
+                range_date = calculate_date_range(df.loc[idx, '일시'], n)
+
+                start_date, end_date = datetime.strptime(range_date[0], date_format), datetime.strptime(range_date[1], date_format)
+                
+                in_range_df = df[(df['일시'] >= start_date) & (df['일시'] <= end_date)]
+                
+                tmp_list = []
+                
+                for tmp in in_range_df['합계 일사량(MJ/m2)']:
+                    tmp_list.append(tmp)
+
+                df.loc[idx, '직전 '+str(n)+'달 합계 일사량(MJ/m2)'] = sum(tmp_list)
+
+            # 6) Calculate the average wind speed for the previous n months.      
+            for idx in df.index:
+                if df.loc[idx, '연도'] == 1999:
+                    continue
+                
+                range_date = calculate_date_range(df.loc[idx, '일시'], n)
+
+                start_date, end_date = datetime.strptime(range_date[0], date_format), datetime.strptime(range_date[1], date_format)
+                
+                in_range_df = df[(df['일시'] >= start_date) & (df['일시'] <= end_date)]
+                
+                tmp_list = []
+                
+                for tmp in in_range_df['평균 풍속(m/s)']:
+                    tmp_list.append(tmp)
+
+                if tmp_list != []:
+                    df.loc[idx, '직전 '+str(n)+'달 평균 풍속(m/s)'] = sum(tmp_list)/len(tmp_list)
+            
+            # 7) Calculate the maximum wind speed for the previous n months.     
+            for idx in df.index:
+                if df.loc[idx, '연도'] == 1999:
+                    continue
+                
+                range_date = calculate_date_range(df.loc[idx, '일시'], n)
+
+                start_date, end_date = datetime.strptime(range_date[0], date_format), datetime.strptime(range_date[1], date_format)
+                
+                in_range_df = df[(df['일시'] >= start_date) & (df['일시'] <= end_date)]
+                
+                best = 0
+                for tmp in in_range_df['최대 풍속(m/s)']:
+                    if tmp > best:
+                        best = tmp
+
+                df.loc[idx, '직전 '+str(n)+'달 최대 풍속(m/s)'] = best
+
+            # 8) Calculate the highest temperature for the previous n months.
+            for idx in df.index:
+                if df.loc[idx, '연도'] == 1999:
+                    continue
+                
+                range_date = calculate_date_range(df.loc[idx, '일시'], n)
+
+                start_date, end_date = datetime.strptime(range_date[0], date_format), datetime.strptime(range_date[1], date_format)
+                
+                in_range_df = df[(df['일시'] >= start_date) & (df['일시'] <= end_date)]
+                
+                best = 0
+                for tmp in in_range_df['최고기온(°C)']:
+                    if tmp > best:
+                        best = tmp
+
+                df.loc[idx, '직전 '+str(n)+'달 최고기온(°C)'] = best
+
+            # 9) Calculate the lowest temperature for the previous n months.
+            for idx in df.index:
+                if df.loc[idx, '연도'] == 1999:
+                    continue
+                
+                range_date = calculate_date_range(df.loc[idx, '일시'], n)
+
+                start_date, end_date = datetime.strptime(range_date[0], date_format), datetime.strptime(range_date[1], date_format)
+                
+                in_range_df = df[(df['일시'] >= start_date) & (df['일시'] <= end_date)]
+                
+                best = 0
+                for tmp in in_range_df['최저기온(°C)']:
+                    if tmp < best:
+                        best = tmp
+
+                df.loc[idx, '직전 '+str(n)+'달 최저기온(°C)'] = best
+
+            # 10) Calculate the average ground temperature for the previous n months.
+            for idx in df.index:
+                if df.loc[idx, '연도'] == 1999:
+                    continue
+                
+                range_date = calculate_date_range(df.loc[idx, '일시'], n)
+
+                start_date, end_date = datetime.strptime(range_date[0], date_format), datetime.strptime(range_date[1], date_format)
+                
+                in_range_df = df[(df['일시'] >= start_date) & (df['일시'] <= end_date)]
+                
+                tmp_list = []
+                
+                for tmp in in_range_df['평균 지면온도(°C)']:
+                    tmp_list.append(tmp)
+
+                if tmp_list != []:
+                    df.loc[idx, '직전 '+str(n)+'달 평균 지면온도(°C)'] = sum(tmp_list)/len(tmp_list)
+
+        df.to_csv("add_previous_feature/"+name+"_df.csv")
         
-# feature리스트에서 error가 최소가 되는 최적의 조합을 찾는 함수
+# ===========================================================================
+# find_best_feature_combination(df_list, item_list, feature_list, train_size)
+# ===========================================================================
+# It performs feature selection by trying different combinations of features 
+# and evaluating their performance using linear regression.
+# ===========================================================================
 def find_best_feature_combination(df_list, item_list, feature_list, train_size):
     plt.clf()
     garlic_error_list = []
@@ -36,7 +317,6 @@ def find_best_feature_combination(df_list, item_list, feature_list, train_size):
     best_combination = []
 
     for df, item, error, comb, mlr in zip(df_list, item_list, error_list, comb_list, mlr_list):
-        df = df[df['연도'] != 1999]
         print("[" + item + "]")
         
         for r in range(1, len(feature_list) + 1):
@@ -56,7 +336,6 @@ def find_best_feature_combination(df_list, item_list, feature_list, train_size):
 
                 error.append(mse)
                 comb.append(list(combination))
-                # mlr.append(mlr)
 
         print("best error: ", min(error))
         print("best combination: ", comb[error.index(min(error))])
@@ -65,16 +344,16 @@ def find_best_feature_combination(df_list, item_list, feature_list, train_size):
 
     return best_combination
 
-# # multiple linear regression을 돌리는 함수
-# def multipleRegression(df, item, train_size):
-    
-#     y = df['인플레이션 반영가']
-#     x = df.drop('인플레이션 반영가', axis=1)
-    
-
+# ========================================
+# multipleRegression(df, item, train_size)
+# ========================================
+# The function fits a linear regression model, calculates the mean squared error (MSE) 
+# for both the training and test sets, and prints the results. 
+# It also returns the rounded coefficients of the regression equation and 
+# the trained linear regression model.
+# ========================================
 def multipleRegression(df, item, train_size):
-    # for df, item in zip(df_list, item_list):
-        # print(df)
+
     x = df.drop('인플레이션 반영가', axis=1)
     y = df['인플레이션 반영가']
     
@@ -109,6 +388,12 @@ def multipleRegression(df, item, train_size):
 
     return coefficients_rounded, mlr
 
+# ===========================================================
+# linearRegression(df, target_df, item, train_size, col_name)
+# ===========================================================
+# The function fits a linear regression model, calculates the mean squared error (MSE) 
+# between the predicted and actual values, and prints the error.
+# ========================================
 def linearRegression(df, target_df, item, train_size, col_name):
 
     x = df.to_frame()
@@ -132,80 +417,15 @@ def linearRegression(df, target_df, item, train_size, col_name):
     plt.legend()
     plt.show()
 
-# regression line을 그려주는 함수
+# visualize regression line
 def plot_regression_line(x, y, y_predict):
+
     # Plot the scatter plot of predicted vs. actual values
     plt.scatter(x, y, alpha=0.4, label='Actual')
     plt.scatter(x, y_predict, alpha=0.4, label='Predicted')
     
-    # Sort the values in ascending order for a smooth line plot
-    sorted_indices = np.argsort(x)
-    sorted_x = x[sorted_indices]
-    sorted_y_predict = y_predict[sorted_indices]
-    
-    # Plot the regression line
-    plt.plot(sorted_x, sorted_y_predict, color='red', label='Regression Line')
-    
-    plt.xlabel("Input features")
-    plt.ylabel("Target variable")
-    plt.title("Actual vs. Predicted")
-    plt.legend()
-    plt.show()
-
-# polynomial regression
-def polynomial_regression(df, column_list, target, degree):
-    # Prepare the input features (x) and target variable (y)
-    x = df[column_list]
-    y = df[target]
-    
-    # Apply polynomial transformation to the input features
-    poly_features = PolynomialFeatures(degree=degree)
-    x_poly = poly_features.fit_transform(x)
-
-    print('x_poly: ', x_poly)
-    
-    # Train a linear regression model with the polynomial features
-    model = LinearRegression()
-    model.fit(x_poly, y)
-    
-    # Predict the target variable using the trained model
-    y_predict = model.predict(x_poly)
-    
-    # Compute and print the score (R-squared) of the model
-    print('score: ', model.score(x_poly, y))    
-    
-    # Plot the scatter plot of predicted vs. actual values
-    plt.scatter(y, y_predict, alpha=0.4)
-    plt.xlabel("Actual value")
-    plt.ylabel("Predicted value")
-    plt.title("Scatter Plot - Actual vs. Predicted")
-    plt.show()
-
-# 분포를 표시하는 함수
 def visualizeDistribution(df_list, feature_name):
     for df in df_list:
         plt.plot(df[feature_name])
         plt.show()
-
-# polynomial regression을 테스트하는 함수
-def test_polynomial_regression(poly_features, model, df, column_list):
-    # Prepare the input features (x)
-    x = df[column_list]
-    
-    # Apply polynomial transformation to the input features
-    x_poly = poly_features.transform(x)
-
-    # Predict the target variable using the trained model
-    y_predict = model.predict(x_poly)
-    
-    # Compare y_predict and y_actual
-    y_actual = df['인플레이션 반영가']
-    comparison = pd.DataFrame({'y_predict': y_predict, 'y_actual': y_actual})
-    print(comparison)
-
-    # Print y_predict and y_actual separately
-    print('y_predict:', y_predict)
-    print('y_actual:', y_actual)
-
-
 
